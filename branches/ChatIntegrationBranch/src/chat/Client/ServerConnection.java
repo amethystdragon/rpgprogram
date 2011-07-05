@@ -25,6 +25,7 @@ package chat.Client;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.InetAddress;
 
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
@@ -64,7 +65,7 @@ public class ServerConnection implements Runnable, ConnectionInterface {
 			// initialize socket
 			SSLSocketFactory sslFact = 
 					(SSLSocketFactory)SSLSocketFactory.getDefault();
-			socket = (SSLSocket)sslFact.createSocket(c.site, c.PORT);
+			socket = (SSLSocket)sslFact.createSocket(c.getAddress(), c.PORT);
 			// Checking the supported Cipher suites.
 			String [] enabledCipher = socket.getSupportedCipherSuites ();
 			// Enabled the Cipher suites.

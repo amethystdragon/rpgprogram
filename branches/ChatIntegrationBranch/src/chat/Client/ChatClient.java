@@ -24,28 +24,29 @@ package chat.Client;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Container;
 import java.awt.Cursor;
-import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.net.InetAddress;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Hashtable;
 
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.ImageIcon;
-import javax.swing.JApplet;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
@@ -57,7 +58,6 @@ import javax.swing.text.html.HTML;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 
-import commands.AddGM;
 import commands.AddUser;
 import commands.Channel;
 import commands.Chat;
@@ -66,6 +66,7 @@ import commands.Log;
 import commands.Private;
 import commands.RemoveUser;
 import commands.Rename;
+import commands.SetGM;
 import commands.Whisper;
 
 /* -------------------- JavaDoc Information ----------------------*/
@@ -127,7 +128,7 @@ For use in a webpage:
 </COMMENT>
 </OBJECT>
 */
-public class ChatClient extends JApplet {
+public class ChatClient extends JPanel {
 	
 	/**
 	 * 
@@ -136,13 +137,12 @@ public class ChatClient extends JApplet {
 	public String username;
 	private ServerConnection server;
 	public int PORT;
-	public String site;
 	public ArrayList<String> users;
 	private CommandHistory history;
 	public ArrayList<String> afks;
 	public ArrayList<String> admins;
 	public boolean admin;
-	public String locationURL;
+	public InetAddress address;
 	private final String linkURL = "http://joe.tgpr.org/LlamaChat";
 	public Hashtable<String, Boolean> channels;
 	private static final String VERSION = "v0.8";
@@ -150,71 +150,72 @@ public class ChatClient extends JApplet {
 	public boolean showUserStatus;
 	public boolean chanAdmin;
 	
-	Container c;
+	private ChatPane mainChat;
+	private JList userList;
+	private JTextField messageText;
+	private JScrollPane textScroller;
+	private JPopupMenu popup;
+	protected JComboBox cboChannels;
+	private JButton butChannel;
+	protected JButton butCreate;
 	
-	ChatPane mainChat;
-	JList userList;
-	JTextField messageText;
-	JScrollPane textScroller;
-	JPopupMenu popup;
-	JComboBox cboChannels;
-	JButton butChannel;
-	JButton butCreate;
-	
-	ImageIcon conNo;
-	ImageIcon conYes;
-	ImageIcon secNo;
-	ImageIcon secYes;
-	JLabel conIcon;
-	JLabel secIcon;
-	JLabel bottomText;
+	private ImageIcon conNo;
+	private ImageIcon conYes;
+	private ImageIcon secNo;
+	private ImageIcon secYes;
+	private JLabel conIcon;
+	private JLabel secIcon;
+	private JLabel bottomText;
 	
 	
-	MyAction myAction;
-	MyKeyListener myKeyListener;
-	MyMouseListener myMouseListener;
-	MyHyperlinkListener myHyperlinkListener;
-	Color myColors[] = new Color[3];
+	private MyAction myAction;
+	private MyKeyListener myKeyListener;
+	private MyMouseListener myMouseListener;
+	protected MyHyperlinkListener myHyperlinkListener;
+	private Color myColors[] = new Color[3];
 	
-	Rectangle rect;
-
+	
+	public static void main(String[] arg){
+		JFrame frame = new JFrame("Test");
+		frame.add(new ChatClient());
+		frame.setSize(500, 500);
+		frame.pack();
+		frame.setVisible(true);
+	}
+	
+	
+	public ChatClient(){
+		if (username == null) {
+			username = JOptionPane.showInputDialog(this, "Please enter a username", 								"Login",
+									JOptionPane.QUESTION_MESSAGE);
+		}
+		PORT = 42412;
+		
+		try {
+			byte[] temp = {127, 0, 0, 1};
+			address = InetAddress.getByAddress(temp);
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		}
+		
+		createUI();
+	}
+	
+	
 	/**
 	 * Initializes the graphical components
 	 */
-	public void init() {
-		username = getParameter("username");
-		if (username == null) {
-			username = JOptionPane.showInputDialog(
-									this,
-									"Please enter a username",
-									"Login",
-									JOptionPane.QUESTION_MESSAGE);
-		}
-		try {
-			PORT = Integer.valueOf(getParameter("port")).intValue();
-		} catch (NumberFormatException e) {
-			PORT = 42412;
-		}
-		
-		URL url = getDocumentBase();
-		site = url.getHost();
-		locationURL = "http://" + site + ":" + url.getPort() + "/" + url.getPath();
-		
+	private void createUI() {
 		setSize(615,362);
-		c = getContentPane();
 		
-		c.setBackground(new Color(224,224,224));
+		setBackground(new Color(224,224,224));
 		
-		if (site == null || locationURL == null) {
-			c.add(new JLabel("ERROR: did not recieve needed data from page"));
-		}
-
 		myAction = new MyAction();
 		myKeyListener = new MyKeyListener();
 		myMouseListener = new MyMouseListener();
 		myHyperlinkListener = new MyHyperlinkListener();
 
-		c.setLayout(null);
+		setLayout(null);
 		
 		cboChannels = new JComboBox();
 		cboChannels.setBounds(5, 5, 150, 24);
@@ -248,17 +249,16 @@ public class ChatClient extends JApplet {
 		messageText.setColumns(10);
 		messageText.setBackground(new Color(249, 249, 250));
 		
-//		JMenuItem item;
 		popup = new JPopupMenu("test");
 		popup.add("whisper").addActionListener(myAction);
 		popup.add("private message").addActionListener(myAction);
 		popup.add("ignore").addActionListener(myAction);
 		popup.add("clear ignore list").addActionListener(myAction);
 		
-		conNo = new ImageIcon(getURL("images/connect_no.gif"));
-		conYes = new ImageIcon(getURL("images/connect_established.gif"));
-		secNo = new ImageIcon(getURL("images/decrypted.gif"));
-		secYes = new ImageIcon(getURL("images/encrypted.gif"));
+		conNo = new ImageIcon("images/connect_no.gif");
+		conYes = new ImageIcon("images/connect_established.gif");
+		secNo = new ImageIcon("images/decrypted.gif");
+		secYes = new ImageIcon("images/encrypted.gif");
 
 		conIcon = new JLabel(conNo);
 		conIcon.setBorder(new EtchedBorder());
@@ -275,15 +275,15 @@ public class ChatClient extends JApplet {
 						"</body></html>");
 		bottomText.setBounds(5, 336, 500, 20);
 		
-		c.add(cboChannels);
-		c.add(butChannel);
-		c.add(butCreate);
-		c.add(textScroller);
-		c.add(userScroller);
-		c.add(messageText);
-		c.add(conIcon);
-		c.add(secIcon);
-		c.add(bottomText);
+		add(cboChannels);
+		add(butChannel);
+		add(butCreate);
+		add(textScroller);
+		add(userScroller);
+		add(messageText);
+		add(conIcon);
+		add(secIcon);
+		add(bottomText);
 		
 		userList.addMouseListener(myMouseListener);
 		messageText.addKeyListener(myKeyListener);
@@ -301,8 +301,6 @@ public class ChatClient extends JApplet {
 		myColors[0] = new Color(200, 0, 0);
 		myColors[1] = new Color(0, 150, 0);
 		myColors[2] = new Color(0, 0, 200);
-		
-		rect = new Rectangle(0,0,1,1);
 		
 		String opening = "<font color=#333333>" +
 						 "==================================<br>" +
@@ -459,10 +457,10 @@ public class ChatClient extends JApplet {
     
     	public void mouseClicked(MouseEvent e) {
         	if (e.getSource() == bottomText) {
-				try {
-					getAppletContext().showDocument(
-										new URL(linkURL), "_blank");
-        		} catch (java.net.MalformedURLException ex) { }
+//				try {
+//					getAccessibleContext().showDocument(
+//										new URL(linkURL), "_blank");
+//        		} catch (java.net.MalformedURLException ex) { }
         	} else {
             	maybeShowPopup(e);
 			}
@@ -481,7 +479,7 @@ public class ChatClient extends JApplet {
 	protected final class MyHyperlinkListener implements HyperlinkListener {
 		public void hyperlinkUpdate(HyperlinkEvent e) {
 			if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-				getAppletContext().showDocument(e.getURL(), "_blank");
+//				getAccessibleContext().showDocument(e.getURL(), "_blank");
 			}
 		}
 	}
@@ -495,14 +493,10 @@ public class ChatClient extends JApplet {
 		 * 
 		 */
 		private static final long serialVersionUID = -1555775149326441666L;
-		final ImageIcon normal = 
-					new ImageIcon(getURL("images/face.gif"));
-		final ImageIcon ignored = 
-					new ImageIcon(getURL("images/face_ignore.gif"));
-		final ImageIcon afk = 
-					new ImageIcon(getURL("images/afk.gif"));
-		final ImageIcon admin =
-					new ImageIcon(getURL("images/admin.gif"));
+		final ImageIcon normal = new ImageIcon("images/face.gif");
+		final ImageIcon ignored = new ImageIcon("images/face_ignore.gif");
+		final ImageIcon afk = new ImageIcon("images/afk.gif");
+		final ImageIcon admin = new ImageIcon("images/admin.gif");
 
 		/* This is the only method defined by ListCellRenderer.  We just
 		* reconfigure the Jlabel each time we're called.
@@ -536,25 +530,6 @@ public class ChatClient extends JApplet {
 		}
 	}
 	
-	/**
-	 * Method to take a filename and return a URL object
-	 * @param filename	the name of the file to be turned into URL
-	 * @return the url representing filename
-	 */
-    protected final URL getURL(String filename) {
-        URL url = null;
-
-        try {
-            url = new URL(locationURL + filename);
-        } catch (java.net.MalformedURLException e) {
-            System.err.println("Couldn't create image: " +
-                               "badly specified URL");
-            return null;
-        }
-    
-        return url;
-    }
-
 	/**
 	 * Method called when a user message has been sent.
 	 * checks to see if it is a command or regular message
@@ -740,7 +715,7 @@ public class ChatClient extends JApplet {
 				return false;
 			}
 			String pass = cmd.substring(start+1);
-			server.writeObject(new AddGM(pass));
+			server.writeObject(new SetGM(pass));
 			return true;
 		} else if (admin && cmd.startsWith("kick")) {
 			int start = cmd.indexOf(' ');
@@ -975,6 +950,11 @@ public class ChatClient extends JApplet {
 	
 	public void sendPrivate(String name, String message) { 
 		server.writeObject(new Private(name, message));
+	}
+
+
+	public InetAddress getAddress() {
+		return address;
 	}
 }
 

@@ -31,7 +31,7 @@ import javax.net.ssl.SSLSocket;
 import chat.ConnectionInterface;
 import chat.MessageQueue;
 
-import commands.AddGM;
+import commands.SetGM;
 import commands.AddUser;
 import commands.Channel;
 import commands.Chat;
@@ -179,7 +179,7 @@ public class ClientConnection implements Runnable, ConnectionInterface {
 			writeObject(new Error("admins are not allow on this server"));
 		} else if (password.equals(ChatServer.adminPass)) {
 			admin = true;
-			server.broadcast(new AddGM(name), null, channel);
+			server.broadcast(new SetGM(name), null, channel);
 		} else {
 			writeObject(new Error("incorrect administrative password"));
 		}
@@ -272,7 +272,7 @@ public class ClientConnection implements Runnable, ConnectionInterface {
 					channel = n;
 					server.broadcast(new AddUser(name), name, channel);
 					if (admin) {
-						server.broadcast(new AddGM(name), name, channel);
+						server.broadcast(new SetGM(name), name, channel);
 					}
 
 					writeObject(new Channel(false, channel, null));

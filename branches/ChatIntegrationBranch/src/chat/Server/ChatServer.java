@@ -40,7 +40,7 @@ import javax.xml.parsers.SAXParserFactory;
 
 import org.xml.sax.helpers.DefaultHandler;
 
-import commands.AddGM;
+import commands.SetGM;
 import commands.AddUser;
 import commands.Channel;
 import commands.Chat;
@@ -152,7 +152,7 @@ public final class ChatServer extends Thread {
 			if (o.channel.equals(cc.channel)) {
 				cc.writeObject(new AddUser(un));
 				if (o.isAdmin()) {
-					cc.writeObject(new AddGM(un));
+					cc.writeObject(new SetGM(un));
 				}
 			}
 		}
