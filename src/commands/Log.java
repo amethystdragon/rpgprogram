@@ -1,4 +1,4 @@
-/*- SD_UserAdd.java -----------------------------------------------+
+/*- SD_Log.java ---------------------------------------------------+
  |                                                                 |
  |  Copyright (C) 2002-2003 Joseph Monti, LlamaChat                |
  |                     countjoe@users.sourceforge.net              |
@@ -32,18 +32,23 @@ import chat.ConnectionInterface;
  * @author Joseph Monti <a href="mailto:countjoe@users.sourceforge.net">countjoe@users.sourceforge.net</a>
  * @version 0.8
  */
-public class RemoveUser implements Command, Serializable {
+public class Log implements Command, Serializable {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 677374385003538751L;
-	private String username;
+	private static final long serialVersionUID = -390082726898225980L;
+	private boolean start;
 
-	public RemoveUser(String un) {
-		username = un;
+	public Log(boolean s) {
+		start = s;
+	}
+
+	public Log() {
+		start = false;
 	}
 
 	public void execute(ConnectionInterface sc) {
-		sc.removeUser(username);
+		sc.chatLog(start);
 	}
 }
+

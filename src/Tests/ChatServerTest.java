@@ -26,7 +26,7 @@ public class ChatServerTest {
 	 */
 	@Before
 	public void setUp() throws Exception {
-		server = new ChatServer();
+//		server = new ChatServer();
 	}
 
 	/**

@@ -1,4 +1,4 @@
-/*- SD_UserAdd.java -----------------------------------------------+
+/*- SD_ServerCap.java ---------------------------------------------+
  |                                                                 |
  |  Copyright (C) 2002-2003 Joseph Monti, LlamaChat                |
  |                     countjoe@users.sourceforge.net              |
@@ -23,7 +23,6 @@
 package commands;
 
 import java.io.Serializable;
-
 import chat.ConnectionInterface;
 
 /* -------------------- JavaDoc Information ----------------------*/
@@ -32,18 +31,21 @@ import chat.ConnectionInterface;
  * @author Joseph Monti <a href="mailto:countjoe@users.sourceforge.net">countjoe@users.sourceforge.net</a>
  * @version 0.8
  */
-public class RemoveUser implements Command, Serializable {
+public class ServerCap implements Command, Serializable {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 677374385003538751L;
-	private String username;
-
-	public RemoveUser(String un) {
-		username = un;
+	private static final long serialVersionUID = -1346600761408163576L;
+	public static final char T_CREATE = 0x00;
+	private char type;
+	private Object obj;
+	
+	public ServerCap(char t, Object o) {
+		type = t;
+		obj = o;
 	}
 
 	public void execute(ConnectionInterface sc) {
-		sc.removeUser(username);
+		sc.serverCap(type, obj);
 	}
 }

@@ -27,7 +27,8 @@ public class PlayerUI extends JPanel{
 	
 	
 	private void createUI(){
-		JPanel chat = new ChatClient();
+		//TODO FIX!
+		JPanel chat = null;//new ChatClient();
 		chat.setPreferredSize(new Dimension(300, 500));
 		chat.setVisible(true);
 		this.add(chat, BorderLayout.LINE_START);

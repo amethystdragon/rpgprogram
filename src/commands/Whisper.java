@@ -1,4 +1,4 @@
-/*- SD_UserAdd.java -----------------------------------------------+
+/*- SD_Whisper.java -----------------------------------------------+
  |                                                                 |
  |  Copyright (C) 2002-2003 Joseph Monti, LlamaChat                |
  |                     countjoe@users.sourceforge.net              |
@@ -32,18 +32,20 @@ import chat.ConnectionInterface;
  * @author Joseph Monti <a href="mailto:countjoe@users.sourceforge.net">countjoe@users.sourceforge.net</a>
  * @version 0.8
  */
-public class RemoveUser implements Command, Serializable {
+public class Whisper implements Command, Serializable {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 677374385003538751L;
-	private String username;
+	private static final long serialVersionUID = 706760033052528601L;
+	private String userName;
+	private String message;
 
-	public RemoveUser(String un) {
-		username = un;
+	public Whisper(String un, String m) {
+		userName = un;
+		message = m;
 	}
 
 	public void execute(ConnectionInterface sc) {
-		sc.removeUser(username);
+		sc.whisper(userName, message);
 	}
 }

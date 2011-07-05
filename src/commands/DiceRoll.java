@@ -2,6 +2,7 @@ package commands;
 
 import java.util.Random;
 
+import chat.ConnectionInterface;
 import chat.Server.ChatServer;
 
 /**
@@ -46,7 +47,6 @@ public class DiceRoll implements Command{
 	 * @param text - the dice command passed in
 	 * @return - the the command passed in and the result as a string
 	 */
-	@Override
 	public void execute() {
 		int mid = 0;
 		char temp = '\n';
@@ -73,5 +73,11 @@ public class DiceRoll implements Command{
 		this.result = this.command + " = " + answer;
 		//TODO Rework to add to the server
 //		this.server.addToChat(this.result);
+	}
+
+	@Override
+	public void execute(ConnectionInterface sc) {
+		// TODO Auto-generated method stub
+		
 	}
 }

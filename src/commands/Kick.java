@@ -1,4 +1,4 @@
-/*- SD_UserAdd.java -----------------------------------------------+
+/*- SD_Kick.java --------------------------------------------------+
  |                                                                 |
  |  Copyright (C) 2002-2003 Joseph Monti, LlamaChat                |
  |                     countjoe@users.sourceforge.net              |
@@ -32,18 +32,18 @@ import chat.ConnectionInterface;
  * @author Joseph Monti <a href="mailto:countjoe@users.sourceforge.net">countjoe@users.sourceforge.net</a>
  * @version 0.8
  */
-public class RemoveUser implements Command, Serializable {
+public class Kick implements Command, Serializable {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 677374385003538751L;
+	private static final long serialVersionUID = 9041037972010006897L;
 	private String username;
 
-	public RemoveUser(String un) {
+	public Kick(String un) {
 		username = un;
 	}
 
 	public void execute(ConnectionInterface sc) {
-		sc.removeUser(username);
+		sc.kick(username);
 	}
 }
