@@ -51,6 +51,7 @@ public class ChatPane extends JTextPane {
 	String icoOh;
 	ChatClient chatClient;
 
+	
 	ChatPane(ChatClient cc) {
 		super();
 		
@@ -67,11 +68,11 @@ public class ChatPane extends JTextPane {
 		setEditorKit(kit);
 		setBackground(new Color(249, 249, 250));
 
-		icoSad = "<img src=\"" + cc.locationURL + "images/sad.gif\" height=\"14\" width=\"14\">";
-		icoSmily = "<img src=\"" + cc.locationURL + "images/smiley.gif\" height=\"14\" width=\"14\">";
-		icoOh = "<img src=\"" + cc.locationURL + "images/oh.gif\" height=\"14\" width=\"14\">";
-		icoTongue = "<img src=\"" + cc.locationURL + "images/tongue.gif\" height=\"14\" width=\"14\">";
-		icoWinking = "<img src=\"" + cc.locationURL + "images/winking.gif\" height=\"14\" width=\"14\">";
+		icoSad = "<img src=\"images/sad.gif\" height=\"14\" width=\"14\">";
+		icoSmily = "<img src=\"images/smiley.gif\" height=\"14\" width=\"14\">";
+		icoOh = "<img src=\"images/oh.gif\" height=\"14\" width=\"14\">";
+		icoTongue = "<img src=\"images/tongue.gif\" height=\"14\" width=\"14\">";
+		icoWinking = "<img src=\"images/winking.gif\" height=\"14\" width=\"14\">";
 		
 		addHyperlinkListener(cc.myHyperlinkListener);
 	}
