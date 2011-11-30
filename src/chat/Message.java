@@ -1,7 +1,7 @@
 /**
  * 
  */
-package mediator;
+package chat;
 
 import java.io.Serializable;
 

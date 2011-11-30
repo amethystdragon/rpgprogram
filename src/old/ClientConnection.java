@@ -20,7 +20,7 @@
  +-----------------------------------------------------------------+
  */
 
-package chat.Server;
+package old;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -28,8 +28,6 @@ import java.io.ObjectOutputStream;
 
 import javax.net.ssl.SSLSocket;
 
-import chat.ConnectionInterface;
-import chat.MessageQueue;
 
 import commands.SetGM;
 import commands.AddUser;

@@ -1,4 +1,4 @@
-package mediator.gui;
+package chat.Client;
 
 import java.awt.BorderLayout;
 import java.awt.HeadlessException;
@@ -27,7 +27,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
-import mediator.Message;
+import chat.Message;
+
 
 /**
  * The user interface used for the chat program GUI. 

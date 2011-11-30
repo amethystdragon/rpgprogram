@@ -20,7 +20,7 @@
  +-----------------------------------------------------------------+
  */
 
-package chat.Server;
+package old;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.helpers.DefaultHandler;

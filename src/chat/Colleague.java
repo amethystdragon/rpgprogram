@@ -1,7 +1,7 @@
 /**
  * 
  */
-package mediator;
+package chat;
 
 /**
  * Represents the Colleague interface.

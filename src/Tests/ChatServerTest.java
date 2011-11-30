@@ -3,9 +3,10 @@
  */
 package Tests;
 
+import old.ChatServer;
+
 import org.junit.After;
 import org.junit.Before;
-import chat.Server.ChatServer;
 
 /**
  * @author amethyr

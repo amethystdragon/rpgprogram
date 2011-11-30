@@ -24,7 +24,8 @@ package commands;
 
 import java.io.Serializable;
 
-import chat.ConnectionInterface;
+import old.ConnectionInterface;
+
 
 /* -------------------- JavaDoc Information ----------------------*/
 /**

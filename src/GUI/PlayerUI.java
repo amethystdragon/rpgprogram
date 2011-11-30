@@ -6,8 +6,9 @@ import java.awt.Dimension;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import old.ChatClient;
+
 import mapGenerator.Displaytest;
-import chat.Client.ChatClient;
 
 public class PlayerUI extends JPanel{
 

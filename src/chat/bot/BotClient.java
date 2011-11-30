@@ -6,7 +6,7 @@
  *
 **/
 
-package mediator.bot;
+package chat.bot;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;

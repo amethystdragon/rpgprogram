@@ -20,7 +20,7 @@
  +-----------------------------------------------------------------+
  */
 
-package chat.Server;
+package old;
 
 import java.util.Enumeration;
 import java.util.Hashtable;

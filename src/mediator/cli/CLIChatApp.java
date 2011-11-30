@@ -12,7 +12,8 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Scanner;
 
-import mediator.Message;
+import chat.Message;
+
 
 /**
  * @author Jacob
