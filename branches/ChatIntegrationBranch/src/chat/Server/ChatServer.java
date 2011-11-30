@@ -1,536 +1,347 @@
-/*- ChatServer.java ------------------------------------------+
- |                                                                 |
- |  Copyright (C) 2002-2003 Joseph Monti, LlamaChat                |
- |                     countjoe@users.sourceforge.net              |
- |                     http://www.42llamas.com/LlamaChat/          |
- |                                                                 |
- | This program is free software; you can redistribute it and/or   |
- | modify it under the terms of the GNU General Public License     |
- | as published by the Free Software Foundation; either version 2  |
- | of the License, or (at your option) any later version           |
- |                                                                 |
- | This program is distributed in the hope that it will be useful, |
- | but WITHOUT ANY WARRANTY; without even the implied warranty of  |
- | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the   |
- | GNU General Public License for more details.                    |
- |                                                                 |
- | A copy of the GNU General Public License may be found in the    |
- | installation directory named "GNUGPL.txt"                       |
- |                                                                 |
- +-----------------------------------------------------------------+
+/**
+ * 
  */
 package chat.Server;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Calendar;
-import java.util.Enumeration;
-import java.util.Hashtable;
+import java.net.InetAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
 
-import javax.net.ssl.SSLServerSocket;
-import javax.net.ssl.SSLServerSocketFactory;
-import javax.net.ssl.SSLSocket;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
+import chat.Colleague;
+import chat.Mediator;
+import chat.Message;
 
-import org.xml.sax.helpers.DefaultHandler;
 
-import commands.SetGM;
-import commands.AddUser;
-import commands.Channel;
-import commands.Chat;
-import commands.Command;
-import commands.Error;
-import commands.RemoveUser;
-import commands.ServerCap;
-
-/* -------------------- JavaDoc Information ----------------------*/
 /**
- * The main class for the Chat server
- * @author Joseph Monti <a href="mailto:countjoe@users.sourceforge.net">countjoe@users.sourceforge.net</a>
- * @version 0.8
+ * Represents the chat server mediator.
+ * @author Nick Iannone
+ * @version 1.1 5/5/11
  */
-public final class ChatServer extends Thread {
-
-	private static ChatServer listeningServer;
-	public static int PORT = 42412;
-	public static String sysLogFile = "chat.log";
-	public static String adminPass = "982c%X#$c9m&Y*(7y75rc6F3cw24#$%r";
-	public static LinkedList<ClientConnection> connectingUsers;
-	public static Hashtable<String, ClientConnection> connectedUsers;
-	public static boolean running;
-	public static boolean allowAdmin = true;
-	private static PrintWriter sysLogOut;
-	public static String chatLogPath = ".";
-	private static Hashtable<String, ChatFileItem> channelFiles;
-	public static String userExportFile = null;
-	public static ChannelManager channels;
-	public static String welcomeMessage = null;
-	public static String serverConfigFile = "llamachatconf.xml";
+public class ChatServer implements Mediator {
+	
+	/**
+	 * The list of colleagues attached to the mediator.
+	 */
+	private volatile List<Colleague> colleagues;
 
 	/**
-	 * called when a new user has connected.
-	 * @param s	the secure socket that the user connected on
+	 * The version string.
+	 * @since 1.1
 	 */
-	synchronized public void newUser(SSLSocket s) {
-		ClientConnection cc = new ClientConnection(this, s);
-		connectingUsers.add(cc);
+	private static final String VERSION = "1.1";
+	
+	/**
+	 * The default name index. Used in generating default names.
+	 */
+	public static int defaultNameIndex = 0;
+	
+	/**
+	 * Gets the next available default name.
+	 * @return The next default name.
+	 */
+	public static String getDefaultName() {
+		String name = "Unnamed-" + defaultNameIndex;
+		defaultNameIndex++;
+		return name;
+	}
+	
+	/**
+	 * The server port.
+	 */
+	public static final int PORT = 4000;
+
+	/**
+	 * The non-proxy client name.
+	 */
+	private static final String LOCAL_NAME = "GHOST";
+	
+	/**
+	 * The server-side socket.
+	 */
+	private ServerSocket serverSocket;
+	
+	/**
+	 * The outgoing message queue.
+	 */
+	private volatile Queue<Message> outgoingQueue;
+	
+	/**
+	 * Constructor. Starts the chat server, and starts a listener thread for connections.
+	 * @throws IOException if the socket cannot be opened.
+	 */
+	public ChatServer() throws IOException {
+		// Set up the colleague tracking.
+		colleagues = new LinkedList<Colleague>();
+		// Notify of initialization.
+		echoVersion();
+		// Create the outgoing message queue.
+		outgoingQueue = new LinkedList<Message>();
+		// Create the server socket.
+		serverSocket = new ServerSocket(PORT);
+		// Notify of port creation.
+		echoPortConfig();
+		// Start the listen thread.
+		startListenThread();
+		// Start the dispatch thread.
+		startDispatchThread();
+		// Start the removal thread.
+		startRemovalThread();
+	}
+	
+	/**
+	 * Echoes the IP/port configuration.
+	 */
+	private void echoPortConfig() {
+		InetAddress addr = serverSocket.getInetAddress();
+		System.out.println("Listening on address " + addr.getHostAddress() + ", port " + PORT + "...");
 	}
 
 	/**
-	 * finalizes the connection to the client by setting its username
-	 * and updating all lists of users by sending the new user to all the
-	 * connected users and sending the user list to the new user, also
-	 * checks the validity of the username
-	 * @param uname	the desired user name for the new user
-	 * @param cc	the object representing the connecting user
-	 * @return		true on success, false otherwise
+	 * Echoes the version number.
+	 * @since 1.1
 	 */
-	synchronized public boolean finalizeUser(String uname,
-											ClientConnection cc) {
-	    if (connectedUsers.containsKey(uname) ||
-									connectedUsers.contains(cc)) {
-			cc.writeObject(new Error("Already a user of that name or " +
-					"already connected. \nType \\rename &lt;new name&gt; to " +
-					"choose a different name"));
-			log(cc, "failed [duplicate exists]");
-	       return false;
-		} else if (uname.length() > 10) {
-			cc.writeObject(new Error("Username too long.\n" +
-							"Type \\rename &lt;new name&gt; to choose " +
-							"a different name"));
-			log(cc, "failed [bad name]");
-			return false;
-		} else if (uname.equals("server") || !uname.matches("[\\w_-]+?")) {
-			cc.writeObject(new Error("Invalid username " + uname + ".\n" +
-							"Type \\rename &lt;new name&gt; to choose " +
-							"a different name"));
-			log(cc, "failed [bad name]");
-			return false;
-	    } else if (connectingUsers.remove(cc)) {
-			cc.writeObject(new ServerCap(ServerCap.T_CREATE, 
-							new Character(ChannelManager.allowUserChannels)));
-			if (welcomeMessage != null) {
-				cc.writeObject(new Chat("server", welcomeMessage));
-			}
-			cc.writeObject(new Channel(false, cc.channel, null));
-			sendUserList(cc);
-			Enumeration<?> e = channels.enumerate();
-			while (e.hasMoreElements()) {
-				String channel = (String) e.nextElement();
-				cc.writeObject(new Channel(true, channel, 
-						channels.channelHasPass(channel)));
-			}
-			connectedUsers.put(uname, cc);
-		    broadcast(new AddUser(uname), uname, cc.channel);
-			updateUserExport();
-			log(cc, "connected as " + uname);
-		    return true;
-	    }
-
-		cc.writeObject(new Error("invalid connection procedure, please try again"));
-		return false;
+	private void echoVersion() {
+		System.out.println("=============================================");
+		System.out.println("Welcome to Mediator Chat v" + VERSION);
+		System.out.println("=============================================");
 	}
 
 	/**
-	 * sends the current user listing to the specified user
-	 * @param cc	the user requesting the list
+	 * Starts the connection listener thread.
 	 */
-	synchronized public void sendUserList(ClientConnection cc) {
-		Enumeration<String> e = connectedUsers.keys();
-		while (e.hasMoreElements()) {
-			String un = (String) e.nextElement();
-			if (cc.name.equals(un)) {
-				continue;
-			}
-			ClientConnection o = (ClientConnection) connectedUsers.get(un);
-			if (o.channel.equals(cc.channel)) {
-				cc.writeObject(new AddUser(un));
-				if (o.isAdmin()) {
-					cc.writeObject(new SetGM(un));
+	private void startListenThread() {
+		Thread listen = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				System.out.println("Starting listen thread...");
+				while (true) {
+					try {
+						Socket s = serverSocket.accept();
+						Colleague c = new ColleagueProxy(ChatServer.this, s);
+						System.out.println("Client connected from " + s.getInetAddress().getHostAddress() + ":" + s.getPort() + ", on local port " + s.getLocalPort() + ".");
+						addColleague(c);
+					} catch (IOException ex) {
+						// If we can't connect to the remote client, just forget it and move on.
+						ex.printStackTrace();
+					}
 				}
 			}
-		}
-		cc.writeObject(new AddUser(null)); // send End of List
+		});
+		listen.start();
 	}
-
+	
 	/**
-	 * sends the specified SocketData to the client, to
-	 * @param sd	the SocketData object to be sent
-	 * @param to	the user to be sent the data
-	 * @return 	status of the sendTo
+	 * Starts the client removal thread.
 	 */
-	synchronized public boolean sendTo(Command sd, String to) {
-		ClientConnection o = (ClientConnection) connectedUsers.get(to);
-		if (o != null) {
-			o.writeObject(sd);
-			return true;
+	private void startRemovalThread() {
+		Thread removal = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				System.out.println("Starting client timeout thread...");
+				while (true) {
+					try {
+						// Wait for a while to minimize blocking.
+						Thread.sleep(100);
+					} catch (InterruptedException e) {}
+					// Make a list to store the removed colleagues.
+					List<Colleague> removedColleagues = new LinkedList<Colleague>();
+					synchronized (colleagues) {
+						// Go thru the colleagues list, looking for closed connections.
+						Iterator<Colleague> it = colleagues.iterator();
+						while (it.hasNext()) {
+							// Get the next colleague.
+							Colleague c = it.next();
+							if (c instanceof ColleagueProxy) {
+								// Convert to a server colleague.
+								ColleagueProxy col = (ColleagueProxy)c;
+								// If we find a closed connection, remove the colleague and quickly restart the search.
+								if (col.isClosed()) {
+									it.remove();
+									removedColleagues.add(col);
+								}
+							}
+						}
+					}
+					int size = removedColleagues.size();
+					if (size > 0) {
+						if (size == 1) {
+							System.out.println("Found 1 colleague to remove.");
+						} else {
+							System.out.println("Found " + size + " colleagues to remove.");
+						}
+						// Go thru and notify everyone of the removed colleague(s).
+						for (Colleague col : removedColleagues) {
+							removeColleague(col);
+						}
+					}
+				}
+			}
+		});
+		removal.start();
+	}
+	
+	/**
+	 * Starts the message dispatch thread.
+	 * This thread runs through and dispatches outgoing messages to all clients.
+	 */
+	private void startDispatchThread() {
+		Thread dispatch = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				System.out.println("Starting dispatch thread...");
+				while (true) {
+					try {
+						Thread.sleep(10);
+					} catch (InterruptedException ex) {}
+					synchronized (outgoingQueue) {
+						while (!outgoingQueue.isEmpty()) {
+							Message msg = outgoingQueue.poll();
+							dispatchMessage(msg);
+						}
+					}
+				}
+			}
+		});
+		dispatch.start();
+	}
+	
+	/**
+	 * Adds a colleague to the list.
+	 * @param col The colleague that has joined the server.
+	 */
+	@Override
+	public boolean addColleague(Colleague col) {
+		boolean added = false;
+		if (col != null) {
+			synchronized (colleagues) {
+				if (!colleagues.contains(col)) {
+					added = colleagues.add(col);
+				}
+			}
+			if (added) {
+				String name = LOCAL_NAME;
+				if (col instanceof ColleagueProxy) {
+					ColleagueProxy cp = (ColleagueProxy)col;
+					name = cp.getName();
+				}
+				Message msg = new Message("INFO", "User " + name + " has joined the server.");
+				enqueueMessage(msg);
+			}
+		}
+		return added;
+	}
+	
+	/**
+	 * Removes a colleague from the list of mediators.
+	 * @param col The colleague that has left the server.
+	 */
+	@Override
+	public boolean removeColleague(Colleague col) {
+		boolean removed = false;
+		if (col != null) {
+			synchronized (colleagues) {
+				removed = colleagues.remove(col);
+			}
+			if (removed) {
+				String name = LOCAL_NAME;
+				if (col instanceof ColleagueProxy) {
+					ColleagueProxy cp = (ColleagueProxy)col;
+					name = cp.getName();
+				}
+				Message msg = new Message("INFO", "User " + name + " has left the server.");
+				enqueueMessage(msg);
+			}
+		}
+		return removed;
+	}
+	
+	/**
+	 * Checks for / switches, and handles those if applicable. Otherwise, sends the message to all clients.
+	 * @see chat.Mediator#sendMessage(chat.Colleague, java.lang.String)
+	 */
+	@Override
+	public void sendMessage(Colleague sender, String msg) {
+		if (msg.startsWith("/")) {
+			// Check for / switches.
+			handleSwitch(sender, msg);
 		} else {
-			return false;
+			// Generate the name, and send the message raw to all clients.
+			String name = LOCAL_NAME;
+			// If we can get a name from the client, use that.
+			if (sender instanceof ColleagueProxy) {
+				name = ((ColleagueProxy)sender).getName();
+			}
+			// Generate and send the message.
+			Message rawmsg = new Message(name, msg);
+			enqueueMessage(rawmsg);
+		}
+	}
+	
+	/**
+	 * Enqueues outgoing messages for future dispatching.
+	 * @param msg The message to be dispatched.
+	 */
+	private void enqueueMessage(Message msg) {
+		synchronized (outgoingQueue) {
+			outgoingQueue.add(msg);
 		}
 	}
 
 	/**
-	 * broadcases a message to all connected user except from
-	 * @param sd	the SocketData object to be sent
-	 * @param from	the user to be avoided when sending data
-	 *				(usually the user sending the data)
+	 * Handle a switch in the client's message.
+	 * @param sender The colleague object who sent the message.
+	 * @param msg The message that was sent.
 	 */
-	synchronized public void broadcast(Command sd, String from) {
-		Enumeration<String> e = connectedUsers.keys();
-		while (e.hasMoreElements()) {
-			String to = (String) e.nextElement();
-			if (!to.equals(from)) {
-				ClientConnection o = (ClientConnection) connectedUsers.get(to);
-				o.writeObject(sd);
+	private void handleSwitch(Colleague sender, String msg) {
+		// Just yell at the user for now.
+		Message m = null;
+		if(msg.substring(1,3).equals("me")){
+			m = new Message(((ColleagueProxy)sender).getName(),msg.substring(3, msg.length()));
+			m.toggleMe(true);
+		}else{
+			m = new Message("INFO", "Invalid command: [[" + msg + "]].");
+		}
+		enqueueMessage(m);
+	}
+	
+	/**
+	 * Dispatches the message to the selected client.
+	 * Used By whisper
+	 * 
+	 * @param target The target colleague.
+	 * @param msg The message to send.
+	 */
+	@SuppressWarnings("unused")
+	private void dispatchSingleMessage(Colleague target, Message msg) {
+		target.receiveMessage(msg);
+	}
+
+	/**
+	 * Dispatches the message to all connected clients.
+	 * @param msg The message that was sent.
+	 */
+	private void dispatchMessage(Message msg) {
+		// Send it to all colleagues.
+		synchronized (colleagues) {
+			for (Colleague col : colleagues) {
+				col.receiveMessage(msg);
 			}
 		}
+		System.out.println(msg.sender + ": " + msg.message);
 	}
 
 	/**
-	 * broadcases a message to all connected user except from
-	 * and is a member of c
-	 * @param sd	the SocketData object to be sent
-	 * @param from	the user to be avoided when sending data
-	 *				(usually the user sending the data)
-	 * @param c		the channel the user is connected to
+	 * Handles a client name change.
+	 * @param oldName The last reported name of the client.
+	 * @param newName The new name of the client.
 	 */
-	synchronized public void broadcast(Command sd, String from, String c) {
-		Enumeration<String> e = connectedUsers.keys();
-		while (e.hasMoreElements()) {
-			String to = (String) e.nextElement();
-			if (!to.equals(from)) {
-				ClientConnection o = (ClientConnection) connectedUsers.get(to);
-				if (o.channel.equals(c)) {
-					o.writeObject(sd);
-
-				}
-			}
-		}
-	}
-
-	/**
-	 * sends a SD_UserDel object to all users announcing that un has left
-	 * the building
-	 * @param cc	the user leaving
-	 */
-	synchronized public void delete(ClientConnection cc) {
-		broadcast(new RemoveUser(cc.name), null, cc.channel);
-	}
-
-	/**
-	 * Removes a user from the list of connected users and calls delete
-	 * @param cc	the associated ClientConnection.
-	 * @see #delete(ClientConnection cc)
-	 */
-	synchronized public void kill(ClientConnection cc) {
-		try {
-			if (cc.name != null && connectedUsers.remove(cc.name) == cc) {
-				log(cc, cc.name + " disconnected");
-				updateUserExport();
-				if (channels.userDel(cc.channel)) {
-					broadcast(new Channel(true, cc.channel, null), null);
-					chatLog(cc, false);
-				}
-				delete(cc);
-			}
-		} catch (NullPointerException e) {
-			e.printStackTrace();
-			if (cc != null) {
-				log("null pointer on kill: " + cc.name + " (" + cc.channel + ")");
-			} else {
-				log("got sent a null cc");
-			}
-		}
-	}
-
-	/**
-	 * gets the current date/time of the form MM/DD/YY HH:MM:SS
-	 * used for loggin purposes
-	 * @return a string specifying the current date/time
-	 */
-	public static String getTimestamp() {
-	   Calendar rightNow = Calendar.getInstance();
-		return rightNow.get(Calendar.MONTH) + "/" +
-				rightNow.get(Calendar.DATE) + "/" +
-				rightNow.get(Calendar.YEAR) + " " +
-				rightNow.get(Calendar.HOUR_OF_DAY) + ":" +
-				rightNow.get(Calendar.MINUTE) + ":" +
-				rightNow.get(Calendar.SECOND);
-	}
-
-	/**
-	 * writes to the servers log file preceded by a timestamp
-	 * @param s	the string to be logged
-	 */
-	synchronized private void log(String s) {
-		if (sysLogOut != null) {
-			sysLogOut.println(getTimestamp() + " - " + s);
-			sysLogOut.flush();
-		}
-	}
-
-	/**
-	 * a public method used by clients to send log data
-	 * @param cc	the client sending the log, used to identify
-	 				the logger in the log
-	 * @param s		the string to be logged
-	 */
-	public void log(ClientConnection cc, String s) {
-		log(cc.ip + " - " + s);
-	}
-
-	/**
-	 * manages the chat log
-	 * <br><br><i>do something about channels</i>
-	 * @param cc	the client attempting to change the log status. used to
-	 *				determine what channel to work with, if null close all
-	 * @param start	enables chat logging when true, stops otherwise
-	 * @return true on succes
-	 */
-	synchronized public boolean chatLog(ClientConnection cc, boolean start) {
-		if (cc == null) {
-			Enumeration<String> e = channelFiles.keys();
-			while (e.hasMoreElements()) {
-				String name = (String) e.nextElement();
-				ChatFileItem item = (ChatFileItem)channelFiles.get(name);
-				closeLog(null, item);
-			}
-	      	return true;
-		}
-		ChatFileItem currentWriter=(ChatFileItem)channelFiles.get(cc.channel);
-		if (start) {
-			if (currentWriter != null && currentWriter.logging) {
-				cc.writeObject(new Error("already logging " + cc.channel));
-				return false;
-			}
-			if (currentWriter == null) {
-				currentWriter = new ChatFileItem();
-				channelFiles.put(cc.channel, currentWriter);
-			}
-			String fname = chatLogPath + System.getProperty("file.separator") + "chat-" + cc.channel + ".log";
-			try {
-				currentWriter.chatOut =
-						new PrintWriter(new BufferedOutputStream(
-						new FileOutputStream(new File(fname), true)));
-				currentWriter.chatOut.println("log started by " +
-											(cc!=null?cc.name:"server") +
-											" at " + getTimestamp());
-				currentWriter.chatOut.println("====================================================");
-				currentWriter.chatOut.flush();
-				currentWriter.logging = true;
-			} catch (FileNotFoundException e) {
-				cc.writeObject(new Error("error opening " + fname));
-				ChatServer.running = false;
-			   return false;
-			}
-			return true;
-		}
-
-		return closeLog(cc, currentWriter);
-	}
-
-	/**
-	 * utility method to close a specified log
-	 * @param cc	the client attempting to close
-	 * @param currentWriter	the ChatFileItem to close
-	 * @return true on success, false on failure
-	 */
-	private boolean closeLog(ClientConnection cc, ChatFileItem currentWriter) {
-		if (currentWriter == null || currentWriter.chatOut == null) {
-			//cc.writeObject(new SD_Error("not logging"));
-			return false;
-		}
-		currentWriter.chatOut.println("====================================================");
-		currentWriter.chatOut.println("log stopped by " +
-											(cc!=null?cc.name:"server") +
-											" at " + getTimestamp());
-		currentWriter.chatOut.println("====================================================");
-		currentWriter.chatOut.flush();
-		currentWriter.chatOut.close();
-		currentWriter.chatOut = null;
-		currentWriter.logging = false;
-		if (cc != null) {
-			channelFiles.remove(cc.channel);
-		}
-		return true;
-	}
-
-	/**
-	 * logs the specified chat message
-	 * @param cc		the client chatting
-	 * @param message	the message to be sent
-	 */
-	synchronized public void chatLog(ClientConnection cc, String message) {
-		ChatFileItem currentWriter = (ChatFileItem)channelFiles.get(cc.channel);
-		if (currentWriter != null && currentWriter.logging &&
-						currentWriter.chatOut != null) {
-			currentWriter.chatOut.println(cc.name + ": " + message);
-			currentWriter.chatOut.flush();
-		}
-	}
-
-	/**
-	 * allows for the user listing (newline separated) to be exported
-	 * to the filesystem, should be called whenever users are added or
-	 * removed or renamed
-	 * @return true on succes, false otherwise
-	 */
-	synchronized static public boolean updateUserExport() {
-		if (userExportFile == null) {
-			return false;
-		}
-		try {
-			PrintWriter pw = new PrintWriter(new BufferedOutputStream(
-					new FileOutputStream(new File(userExportFile), false)));
-			Enumeration<String> e = connectedUsers.keys();
-			int i;
-			for (i = 0; e.hasMoreElements(); i++) {
-				String usr = (String) e.nextElement();
-				ClientConnection o = (ClientConnection)connectedUsers.get(usr);
-				pw.println(usr + " (" + o.channel + ")");
-			}
-
-			if (i == 0) {
-				pw.println("(no connected users)");
-			}
-
-			pw.close();
-		} catch (FileNotFoundException e) {
-			System.err.println("unable to access userExportFile: " +
-														userExportFile);
-			userExportFile = null;
-		}
-		return true;
-	}
-
-	/**
-	 * creates a new channel, assuming the channel can be created
-	 * @param name	the name of the channel to be craeted
-     * @param pass  the password for the channel
-	 * @param cc	the client requesting the channel
-     * @return true if created
-	 */
-	synchronized public String newChannel(String name, String pass, ClientConnection cc) {
-		String ret;
-		if ((ret = channels.addUserChannel(name, pass, cc)) != null) {
-			return ret;
-		}
-		broadcast(new Channel(true, name, (pass == null ? null : "")), null);
-		return null;
-	}
-
-	/**
-	 * checks to see if the specified channel exists
-	 * @param name	the name of the channel
-     * @return true if name exists exists
-	 */
-	synchronized public boolean channelExists(String name) {
-		return channels.channelExists(name);
-	}
-
-	/**
-	 * the main loop to recieving incoming clients listens on a secure
-	 * server socket creates a shutdown hook to catch a server kill
-	 * and exit gracefully
-	 */
-	public void run() {
-		Runtime.getRuntime().addShutdownHook(new ShutdownThread(this));
-		try {
-			SSLServerSocketFactory factory =
-				(SSLServerSocketFactory) SSLServerSocketFactory.getDefault();
-			SSLServerSocket sslIncoming =
-				(SSLServerSocket) factory.createServerSocket (PORT);
-			String [] enabledCipher = sslIncoming.getSupportedCipherSuites ();
-			sslIncoming.setEnabledCipherSuites (enabledCipher);
-
-			log("Server Started");
-			while(running) {
-				SSLSocket s = (SSLSocket)sslIncoming.accept();
-				newUser(s);
-			}
-		} catch (IOException e) { System.out.println("Error: " + e); }
-		log("Server Stopped");
-	}
-
-
-	/**
-	 * a useless constructor
-	 */
-	ChatServer() {
-		running = true;
-	}
-
-	/**
-	 * main method for class; initializes lists and system log file
-     * @param args the command line arguments
-	 */
-	public static void main(String args[]) {
-		listeningServer = new ChatServer();
-		//listeningServer.running = true;
-
-		connectingUsers = new LinkedList<ClientConnection>();
-		connectedUsers = new Hashtable<String, ClientConnection>();
-		channels = new ChannelManager();
-		channelFiles = new Hashtable<String, ChatFileItem>();
-
-
-		try {
-			DefaultHandler handler = new ConfigParser(listeningServer);
-			SAXParserFactory factory = SAXParserFactory.newInstance();
-			SAXParser saxParser = factory.newSAXParser();
-			saxParser.parse(new File(serverConfigFile), handler);
-		} catch (Throwable t) {
-			System.err.println("error parsing " + serverConfigFile);
-			running = false;
-		}
-
-		try {
-			sysLogOut = new PrintWriter(new BufferedOutputStream(
-						new FileOutputStream(new File(sysLogFile), true)));
-		} catch (FileNotFoundException e) {
-			System.err.println(sysLogFile + " not found.");
-			running = false;
-		}
-
-		updateUserExport();
-
-		listeningServer.start();
-		try {
-			listeningServer.join();
-		} catch (InterruptedException e) { }
-	}
-
-	/**
-	 * A class to enable gracefull shutdown when unexpectadly killed
-	 */
-	public class ShutdownThread extends Thread {
-//        private ChatServer cs;
-        ShutdownThread(ChatServer l) {
-//            cs = l;
-        }
-        public void run() {
-			log("Server Stopped");
-			sysLogOut.close();
-			chatLog(null, false);
-		}
-	}
-
-	/**
-	 * a class to hold logging information on a Hashtable
-	 */
-	private class ChatFileItem {
-		public boolean logging;
-		public PrintWriter chatOut;
-
-		ChatFileItem() {
-			logging = false;
-			chatOut = null;
-		}
+	public void onNameChanged(String oldName, String newName) {
+		Message msg = new Message("INFO", "User " + oldName + " has changed their name to " + newName + ".");
+		enqueueMessage(msg);
 	}
 }

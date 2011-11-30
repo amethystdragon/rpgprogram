@@ -22,7 +22,7 @@
 
 package commands;
 
-import chat.ConnectionInterface;
+import old.ConnectionInterface;
 
 /* -------------------- JavaDoc Information ----------------------*/
 /**

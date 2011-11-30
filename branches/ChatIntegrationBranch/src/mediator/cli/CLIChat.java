@@ -14,7 +14,8 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.util.LinkedList;
 
-import mediator.Message;
+import chat.Message;
+
 
 /**
  * @author Jacob

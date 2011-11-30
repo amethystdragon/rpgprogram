@@ -1,7 +1,7 @@
 /**
  * 
  */
-package mediator.server;
+package chat.Server;
 
 import java.io.IOException;
 

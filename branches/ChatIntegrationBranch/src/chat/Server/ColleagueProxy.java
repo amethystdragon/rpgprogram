@@ -1,7 +1,7 @@
 /**
  * 
  */
-package mediator.server;
+package chat.Server;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -9,9 +9,10 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.SocketException;
 
-import mediator.Colleague;
-import mediator.Mediator;
-import mediator.Message;
+import chat.Colleague;
+import chat.Mediator;
+import chat.Message;
+
 
 /**
  * Represents a proxy for a remote Colleague.
@@ -120,7 +121,7 @@ public class ColleagueProxy implements Colleague {
 	}
 	
 	/**
-	 * @see mediator.Colleague#receiveMessage(mediator.Message)
+	 * @see chat.Colleague#receiveMessage(chat.Message)
 	 */
 	@Override
 	public void receiveMessage(Message msg) {
@@ -138,7 +139,7 @@ public class ColleagueProxy implements Colleague {
 	}
 	
 	/**
-	 * @see mediator.Colleague#sendMessage(String)
+	 * @see chat.Colleague#sendMessage(String)
 	 */
 	@Override
 	public void sendMessage(String msg) {

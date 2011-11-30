@@ -2,8 +2,9 @@ package commands;
 
 import java.util.Random;
 
-import chat.ConnectionInterface;
-import chat.Server.ChatServer;
+import old.ChatServer;
+import old.ConnectionInterface;
+
 
 /**
  * @author amethyr

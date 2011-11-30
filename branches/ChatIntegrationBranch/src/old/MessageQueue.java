@@ -19,7 +19,7 @@
  |                                                                 |
  +-----------------------------------------------------------------+
  */
-package chat;
+package old;
 
 
 import java.util.LinkedList;

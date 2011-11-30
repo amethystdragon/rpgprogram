@@ -6,7 +6,7 @@
  *
 **/
 
-package mediator.bot;
+package chat.bot;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -17,8 +17,9 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import mediator.Colleague;
-import mediator.Message;
+
+import chat.Colleague;
+import chat.Message;
 
 /**
  *

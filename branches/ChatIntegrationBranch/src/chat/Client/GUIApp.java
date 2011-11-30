@@ -1,4 +1,4 @@
-package mediator.gui;
+package chat.Client;
 
 /**
  * The main class of the GUI chat program

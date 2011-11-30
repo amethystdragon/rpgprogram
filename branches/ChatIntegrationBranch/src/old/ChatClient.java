@@ -20,7 +20,7 @@
  +-----------------------------------------------------------------+
  */
 
-package chat.Client;
+package old;
 
 import java.awt.Color;
 import java.awt.Component;
