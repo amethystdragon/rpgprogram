@@ -2,12 +2,21 @@
 
 = Introduction =
 
-Add your content here.
+The program serves to host data, statistics, and as an interface for Role Playing Games (RPG) such ad Dungeons and Dragons, Star Wars, Paranoia XP, and the Dr. Who RPG.
 
 
 = Details =
 
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+Goals of the project
+  * To provide an interface that is modular to provide support for any RPG.
+  * To provide a chat system so that logs can be recorded and kept on file.
+  * To provide a dice roller so that all the player's and Dungon Master's (DM) roles are fair.
+  * To provide the DM total access to interplayer communication.
+  * To store stat sheets of players that can be edited by the DM.
+
+
+
+=Glossery=
+Dungon Master (DM) - 
+
+Role Playing Game (RPG) - 
