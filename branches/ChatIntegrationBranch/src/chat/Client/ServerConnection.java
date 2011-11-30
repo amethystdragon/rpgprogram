@@ -25,8 +25,6 @@ package chat.Client;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.InetAddress;
-
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 
