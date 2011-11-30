@@ -82,7 +82,7 @@ public class Bot implements Colleague {
 	                {
 	                    // Wait a couple seconds
 	                    try {
-	                        Thread.currentThread().sleep(1000);
+							Thread.sleep(1000); //removed Thread.currentThread as sleep gets the current thread AD
 	                    } catch (InterruptedException ex) {
 	                        Logger.getLogger(Bot.class.getName()).log(Level.SEVERE, null, ex);
 	                    }

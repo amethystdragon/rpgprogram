@@ -310,9 +310,12 @@ public class ChatServer implements Mediator {
 	
 	/**
 	 * Dispatches the message to the selected client.
+	 * Used By whisper
+	 * 
 	 * @param target The target colleague.
 	 * @param msg The message to send.
 	 */
+	@SuppressWarnings("unused")
 	private void dispatchSingleMessage(Colleague target, Message msg) {
 		target.receiveMessage(msg);
 	}

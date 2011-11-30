@@ -42,7 +42,6 @@ import java.util.Vector;
 public final class ChannelManager {
 	public static char allowUserChannels;
 	public String defaultChannel;
-	private int defaultCount;
 	private static Hashtable<String, ChannelManagerItem> systemChannels;
 	private static Hashtable<String, ChannelManagerItem> userChannels;
 	public static final String eName = "Invalid Channel Name";
@@ -55,7 +54,6 @@ public final class ChannelManager {
 	ChannelManager() {
 		allowUserChannels = 'y';
 		defaultChannel = "Lobby";
-		defaultCount = 0;
 		systemChannels = null;
 		userChannels = null;
 	}
@@ -125,7 +123,6 @@ public final class ChannelManager {
 	 */
 	public boolean userAdd(String name, String pass) {
 		if (defaultChannel.equals(name)) {
-			defaultCount++;
 			return true;
 		}
 
@@ -161,7 +158,6 @@ public final class ChannelManager {
 	 */
 	public boolean userDel(String name) {
 		if (defaultChannel.equals(name)) {
-			defaultCount--;
 			return false;
 		}
 

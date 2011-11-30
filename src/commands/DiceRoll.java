@@ -72,7 +72,7 @@ public class DiceRoll implements Command{
 		//Returns calculated
 		this.result = this.command + " = " + answer;
 		//TODO Rework to add to the server
-//		this.server.addToChat(this.result);
+		//this.server.addToChat(this.result);
 	}
 
 	@Override
