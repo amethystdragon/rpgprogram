@@ -2,12 +2,12 @@
 
 = Introduction =
 
-The program serves to host data, statistics, and as an interface for Role Playing Games (RPG) such ad Dungeons and Dragons, Star Wars, Paranoia XP, and the Dr. Who RPG.
+The program serves to host data, statistics, and as an interface for Role Playing Games (RPGs) such as Dungeons and Dragons, Star Wars, Paranoia XP, and the Dr. Who RPG.
 
 
 = Details =
 
-Goals of the project
+Goals of the project:
   * To provide an interface that is modular to provide support for any RPG.
   * To provide a chat system so that logs can be recorded and kept on file.
   * To provide a dice roller so that all the player's and Dungon Master's (DM) roles are fair.
@@ -17,7 +17,9 @@ Goals of the project
   * To allow the DM to display a map to players either in sections or its entirety.
 
 
-=Glossery=
-Dungon Master (DM) - 
+=Glossary=
+Dungeon Master (DM) - The person (running a copy of the software and acting in a DM role) responsible for leading a game. Also referred to as God, Overlord, root, or other respected or religious titles.
 
-Role Playing Game (RPG) - 
+Role Playing Game (RPG) - A game in which players take (arguably) imaginary roles as characters in a fictional environment and scenario, involving personal progression in either statistics, abilities, or plot, and which is led by a DM who guides the players through the environment by providing motivation and continual challenges for the players, resolving disputes, and promoting a fun environment.
+
+Chatgroup - Technical term; the grouping that players are placed into for the control of permissions related to administration of the chat system.
