@@ -13,7 +13,8 @@ Goals of the project
   * To provide a dice roller so that all the player's and Dungon Master's (DM) roles are fair.
   * To provide the DM total access to interplayer communication.
   * To store stat sheets of players that can be edited by the DM.
-
+  * To provide the DM with a way to create and edit a map.
+  * To allow the DM to display a map to players either in sections or its entirety.
 
 
 =Glossery=
