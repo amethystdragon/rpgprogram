@@ -1,3 +1,4 @@
+#labels Phase-Requirements
 = Introduction =
 The program serves to host data, statistics, and as an interface for Role Playing Games (RPGs) such as Dungeons and Dragons, Star Wars, Paranoia XP, Dr. Who RPG, etc.
 
@@ -63,18 +64,6 @@ Goals of the project:
  * DM approval on player changes
  * Live change tracking of players by DM
  * Export to .pdf file
-
-----
-
-=Design=
-
-Communication pattern is implemented using the medator pattern where the clients talk to the server and the server updates the clients. Each message is sent as a command to the server by implementing the command pattern.
-
-Map is implemented using the medator pattern as the DM or player updates the map ro a charecters position the changes can be oked by the DM (player moves only) and then sent to the other clients as a status update.
-
-==Sample GUI Mockups==
-
-https://docs.google.com/drawings/d/1L_RCujy0b_NK7k2IXAbLbvptD3izLkpeZPIdao8hW1Q/edit
 
 ----
 
