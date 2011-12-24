@@ -28,10 +28,11 @@ import java.io.ObjectOutputStream;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 
+import chat.commands.AddUser;
+import chat.commands.Command;
+import chat.commands.ServerCap;
 
-import commands.AddUser;
-import commands.Command;
-import commands.ServerCap;
+
 
 /* -------------------- JavaDoc Information ----------------------*/
 /**

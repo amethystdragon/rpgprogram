@@ -27,7 +27,7 @@ package old;
  * The inteface to connection classes.
  * @author Joseph Monti <a href="mailto:countjoe@users.sourceforge.net">countjoe@users.sourceforge.net</a>
  * @version 0.8
- * @see commands.Command
+ * @see chat.commands.Command
  */
 public interface ConnectionInterface {
 	public void addUser(String username);

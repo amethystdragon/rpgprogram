@@ -20,7 +20,7 @@
  +-----------------------------------------------------------------+
  */
 
-package commands;
+package chat.commands;
 
 import java.io.Serializable;
 

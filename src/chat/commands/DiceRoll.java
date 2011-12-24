@@ -1,4 +1,4 @@
-package commands;
+package chat.commands;
 
 import java.util.Random;
 

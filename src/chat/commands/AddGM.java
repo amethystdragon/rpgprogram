@@ -1,4 +1,4 @@
-/*- SD_Kick.java --------------------------------------------------+
+/*- SD_AdminAdd.java ----------------------------------------------+
  |                                                                 |
  |  Copyright (C) 2002-2003 Joseph Monti, LlamaChat                |
  |                     countjoe@users.sourceforge.net              |
@@ -20,7 +20,7 @@
  +-----------------------------------------------------------------+
  */
 
-package commands;
+package chat.commands;
 
 import java.io.Serializable;
 
@@ -33,18 +33,18 @@ import old.ConnectionInterface;
  * @author Joseph Monti <a href="mailto:countjoe@users.sourceforge.net">countjoe@users.sourceforge.net</a>
  * @version 0.8
  */
-public class Kick implements Command, Serializable {
+public class AddGM implements Command, Serializable {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 9041037972010006897L;
-	private String username;
+	private static final long serialVersionUID = 1516120554929323018L;
+	private String text;
 
-	public Kick(String un) {
-		username = un;
+	public AddGM(String txt) {
+		text = txt;
 	}
 
 	public void execute(ConnectionInterface sc) {
-		sc.kick(username);
+		sc.setGM(text);
 	}
 }

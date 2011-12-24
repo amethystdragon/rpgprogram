@@ -1,4 +1,4 @@
-/*- SD_Log.java ---------------------------------------------------+
+/*- SD_Error.java -------------------------------------------------+
  |                                                                 |
  |  Copyright (C) 2002-2003 Joseph Monti, LlamaChat                |
  |                     countjoe@users.sourceforge.net              |
@@ -20,7 +20,7 @@
  +-----------------------------------------------------------------+
  */
 
-package commands;
+package chat.commands;
 
 import java.io.Serializable;
 
@@ -33,23 +33,18 @@ import old.ConnectionInterface;
  * @author Joseph Monti <a href="mailto:countjoe@users.sourceforge.net">countjoe@users.sourceforge.net</a>
  * @version 0.8
  */
-public class Log implements Command, Serializable {
+public class Error implements Command, Serializable {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -390082726898225980L;
-	private boolean start;
+	private static final long serialVersionUID = -3153785647569391917L;
+	private String message;
 
-	public Log(boolean s) {
-		start = s;
-	}
-
-	public Log() {
-		start = false;
+	public Error(String m) {
+		message = m;
 	}
 
 	public void execute(ConnectionInterface sc) {
-		sc.chatLog(start);
+		sc.error(message);
 	}
 }
-

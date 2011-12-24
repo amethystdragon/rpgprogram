@@ -1,4 +1,4 @@
-/*- SD_Rename.java ------------------------------------------------+
+/*- SD_Private.java -----------------------------------------------+
  |                                                                 |
  |  Copyright (C) 2002-2003 Joseph Monti, LlamaChat                |
  |                     countjoe@users.sourceforge.net              |
@@ -20,7 +20,7 @@
  +-----------------------------------------------------------------+
  */
 
-package commands;
+package chat.commands;
 
 import java.io.Serializable;
 
@@ -33,20 +33,20 @@ import old.ConnectionInterface;
  * @author Joseph Monti <a href="mailto:countjoe@users.sourceforge.net">countjoe@users.sourceforge.net</a>
  * @version 0.8
  */
-public class Rename implements Command, Serializable {
+public class Private implements Command, Serializable {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 5526960391943566260L;
-	private String oldName;
-	private String newName;
+	private static final long serialVersionUID = 4882559946337856918L;
+	private String userName;
+	private String message;
 
-	public Rename(String on, String nn) {
-		oldName = on;
-		newName = nn;
+	public Private(String un, String m) {
+		userName = un;
+		message = m;
 	}
 
 	public void execute(ConnectionInterface sc) {
-		sc.rename(oldName, newName);
+		sc.private_msg(userName, message);
 	}
 }
