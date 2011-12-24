@@ -53,7 +53,7 @@ public class ChatServer implements Mediator {
 	/**
 	 * The server port.
 	 */
-	public static final int PORT = 4000;
+	public static final int PORT = 5000;
 
 	/**
 	 * The non-proxy client name.
