@@ -40,14 +40,15 @@ import javax.xml.parsers.SAXParserFactory;
 
 import org.xml.sax.helpers.DefaultHandler;
 
-import commands.SetGM;
-import commands.AddUser;
-import commands.Channel;
-import commands.Chat;
-import commands.Command;
-import commands.Error;
-import commands.RemoveUser;
-import commands.ServerCap;
+import chat.commands.AddUser;
+import chat.commands.Channel;
+import chat.commands.Chat;
+import chat.commands.Command;
+import chat.commands.Error;
+import chat.commands.RemoveUser;
+import chat.commands.ServerCap;
+import chat.commands.SetGM;
+
 
 /* -------------------- JavaDoc Information ----------------------*/
 /**

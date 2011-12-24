@@ -1,4 +1,4 @@
-/*- SD_AdminAdd.java ----------------------------------------------+
+/*- SD_UserAdd.java -----------------------------------------------+
  |                                                                 |
  |  Copyright (C) 2002-2003 Joseph Monti, LlamaChat                |
  |                     countjoe@users.sourceforge.net              |
@@ -20,7 +20,7 @@
  +-----------------------------------------------------------------+
  */
 
-package commands;
+package chat.commands;
 
 import java.io.Serializable;
 
@@ -33,18 +33,18 @@ import old.ConnectionInterface;
  * @author Joseph Monti <a href="mailto:countjoe@users.sourceforge.net">countjoe@users.sourceforge.net</a>
  * @version 0.8
  */
-public class SetGM implements Command, Serializable {
+public class AddUser implements Command, Serializable {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1516120554929323018L;
-	private String text;
+	private static final long serialVersionUID = -5635876627542248587L;
+	private String username;
 
-	public SetGM(String txt) {
-		text = txt;
+	public AddUser(String un) {
+		username = un;
 	}
 
 	public void execute(ConnectionInterface sc) {
-		sc.setGM(text);
+		sc.addUser(username);
 	}
 }

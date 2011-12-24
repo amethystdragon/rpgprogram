@@ -12,6 +12,19 @@ import java.io.Serializable;
  * @version 1.0 5/3/11
  */
 public class Message implements Serializable {
+	/**
+	 * The name of the sender.
+	 */
+	public String sender;
+	
+	/**
+	 * The contents of the message.
+	 */
+	public String message;
+	
+	/**
+	 * 
+	 */
 	private boolean me = false;
 	/**
 	 * The generated serial version UID.
@@ -28,15 +41,6 @@ public class Message implements Serializable {
 		this.message = message;
 	}
 	
-	/**
-	 * The name of the sender.
-	 */
-	public String sender;
-
-	/**
-	 * The contents of the message.
-	 */
-	public String message;
 
 	public void toggleMe(boolean b) {
 		me = b;

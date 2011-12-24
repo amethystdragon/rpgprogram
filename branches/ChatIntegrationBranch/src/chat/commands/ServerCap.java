@@ -1,4 +1,4 @@
-/*- SD_Whisper.java -----------------------------------------------+
+/*- SD_ServerCap.java ---------------------------------------------+
  |                                                                 |
  |  Copyright (C) 2002-2003 Joseph Monti, LlamaChat                |
  |                     countjoe@users.sourceforge.net              |
@@ -20,12 +20,11 @@
  +-----------------------------------------------------------------+
  */
 
-package commands;
+package chat.commands;
 
 import java.io.Serializable;
 
 import old.ConnectionInterface;
-
 
 /* -------------------- JavaDoc Information ----------------------*/
 /**
@@ -33,20 +32,21 @@ import old.ConnectionInterface;
  * @author Joseph Monti <a href="mailto:countjoe@users.sourceforge.net">countjoe@users.sourceforge.net</a>
  * @version 0.8
  */
-public class Whisper implements Command, Serializable {
+public class ServerCap implements Command, Serializable {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 706760033052528601L;
-	private String userName;
-	private String message;
-
-	public Whisper(String un, String m) {
-		userName = un;
-		message = m;
+	private static final long serialVersionUID = -1346600761408163576L;
+	public static final char T_CREATE = 0x00;
+	private char type;
+	private Object obj;
+	
+	public ServerCap(char t, Object o) {
+		type = t;
+		obj = o;
 	}
 
 	public void execute(ConnectionInterface sc) {
-		sc.whisper(userName, message);
+		sc.serverCap(type, obj);
 	}
 }

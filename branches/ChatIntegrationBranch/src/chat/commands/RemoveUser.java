@@ -1,4 +1,4 @@
-/*- SD_Chat.java --------------------------------------------------+
+/*- SD_UserAdd.java -----------------------------------------------+
  |                                                                 |
  |  Copyright (C) 2002-2003 Joseph Monti, LlamaChat                |
  |                     countjoe@users.sourceforge.net              |
@@ -20,7 +20,7 @@
  +-----------------------------------------------------------------+
  */
 
-package commands;
+package chat.commands;
 
 import java.io.Serializable;
 
@@ -33,20 +33,18 @@ import old.ConnectionInterface;
  * @author Joseph Monti <a href="mailto:countjoe@users.sourceforge.net">countjoe@users.sourceforge.net</a>
  * @version 0.8
  */
-public class Chat implements Command, Serializable {
+public class RemoveUser implements Command, Serializable {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 9131101656668104507L;
-	private String userName;
-	private String message;
+	private static final long serialVersionUID = 677374385003538751L;
+	private String username;
 
-	public Chat(String un, String m) {
-		userName = un;
-		message = m;
+	public RemoveUser(String un) {
+		username = un;
 	}
 
 	public void execute(ConnectionInterface sc) {
-		sc.chat(userName, message);
+		sc.removeUser(username);
 	}
 }

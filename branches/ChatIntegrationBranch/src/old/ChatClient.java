@@ -57,16 +57,17 @@ import javax.swing.text.html.HTML;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 
-import commands.AddUser;
-import commands.Channel;
-import commands.Chat;
-import commands.Kick;
-import commands.Log;
-import commands.Private;
-import commands.RemoveUser;
-import commands.Rename;
-import commands.SetGM;
-import commands.Whisper;
+import chat.commands.AddUser;
+import chat.commands.Channel;
+import chat.commands.Chat;
+import chat.commands.Kick;
+import chat.commands.Log;
+import chat.commands.Private;
+import chat.commands.RemoveUser;
+import chat.commands.Rename;
+import chat.commands.SetGM;
+import chat.commands.Whisper;
+
 
 /* -------------------- JavaDoc Information ----------------------*/
 /**

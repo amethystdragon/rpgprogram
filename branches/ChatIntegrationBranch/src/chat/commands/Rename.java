@@ -1,4 +1,4 @@
-/*- SD_AdminAdd.java ----------------------------------------------+
+/*- SD_Rename.java ------------------------------------------------+
  |                                                                 |
  |  Copyright (C) 2002-2003 Joseph Monti, LlamaChat                |
  |                     countjoe@users.sourceforge.net              |
@@ -20,7 +20,7 @@
  +-----------------------------------------------------------------+
  */
 
-package commands;
+package chat.commands;
 
 import java.io.Serializable;
 
@@ -33,18 +33,20 @@ import old.ConnectionInterface;
  * @author Joseph Monti <a href="mailto:countjoe@users.sourceforge.net">countjoe@users.sourceforge.net</a>
  * @version 0.8
  */
-public class AddGM implements Command, Serializable {
+public class Rename implements Command, Serializable {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1516120554929323018L;
-	private String text;
+	private static final long serialVersionUID = 5526960391943566260L;
+	private String oldName;
+	private String newName;
 
-	public AddGM(String txt) {
-		text = txt;
+	public Rename(String on, String nn) {
+		oldName = on;
+		newName = nn;
 	}
 
 	public void execute(ConnectionInterface sc) {
-		sc.setGM(text);
+		sc.rename(oldName, newName);
 	}
 }
