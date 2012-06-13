@@ -3,13 +3,10 @@
  */
 package Tests;
 
-import static org.junit.Assert.assertTrue;
+import old.ChatServer;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Test;
-
-import chat.Server.ChatServer;
 
 /**
  * @author amethyr
@@ -26,7 +23,7 @@ public class ChatServerTest {
 	 */
 	@Before
 	public void setUp() throws Exception {
-		server = new ChatServer();
+//		server = new ChatServer();
 	}
 
 	/**

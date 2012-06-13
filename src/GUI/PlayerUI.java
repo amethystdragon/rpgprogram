@@ -1,62 +1,96 @@
 package GUI;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import mapGenerator.Displaytest;
-import chat.Client.ChatClient;
-
 public class PlayerUI extends JPanel{
+	ChatPanel chatter;
 
-	
-	
+
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -2457263062148886999L;
-	
+
+	/**
+	 * Parent container for the JFrame
+	 */
 	private JFrame container;
-	
+
 	public PlayerUI(JFrame container) {
 		this.container = container;
+		this.container.addWindowListener(new PlayerUIWindowListener());
+
 		createUI();
 	}
-	
-	
+
+
 	private void createUI(){
-		JPanel chat = new ChatClient();
-		chat.setPreferredSize(new Dimension(300, 500));
-		chat.setVisible(true);
-		this.add(chat, BorderLayout.LINE_START);
+		// sets the default window size
+		container.setSize(600, 800);
+		setLayout(new BorderLayout());
+
+		//TODO
+		chatter = new ChatPanel();
+		//Test code
+		add(chatter, BorderLayout.CENTER);
+		chatter.appendToMenuBar(container.getJMenuBar());
+		//End test code
 		
-		JPanel grid = new Displaytest(this.container);
-		grid.setPreferredSize(new Dimension(500, 500));
-		this.add(grid, BorderLayout.CENTER);
 		
+		// make it visible
+		setVisible(true);
+
 	}
-	
-//	public void serverPrompt(){
-//		ChatClientConnection server = null;
-//		try {
-//			String serverAddress = JOptionPane.showInputDialog(null,
-//					"What is the server's IPv4 address?", "127.0.0.1");
-//			Scanner scan = new Scanner(serverAddress);
-//			scan.useDelimiter("[.,;\\s]+");
-//			byte[] addr = new byte[4];
-//			addr[0] = (byte)scan.nextInt();
-//			addr[1] = (byte)scan.nextInt();
-//			addr[2] = (byte)scan.nextInt();
-//			addr[3] = (byte)scan.nextInt();
-//			int port = Integer.parseInt(JOptionPane.showInputDialog(null,
-//					"What is the server's port?", "4000"));
-//			
-//			server = new ChatServerProxy(InetAddress.getByAddress(addr), port);
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-//		server.writeToChat("");
-//	}
+
+	/**
+	 * Window Listener which handles the close operation
+	 */
+	private class PlayerUIWindowListener implements WindowListener {
+
+		@Override
+		public void windowOpened(WindowEvent e) {
+			// unused
+
+		}
+
+		@Override
+		public void windowClosing(WindowEvent e) {
+
+			// if connected to the server
+			if (chatter.isConnected()) {
+				chatter.disconnect();
+			}
+			System.exit(1);
+		}
+
+		@Override
+		public void windowClosed(WindowEvent e) {
+			// unused
+		}
+
+		@Override
+		public void windowIconified(WindowEvent e) {
+			// unused
+		}
+
+		@Override
+		public void windowDeiconified(WindowEvent e) {
+			// unused
+		}
+
+		@Override
+		public void windowActivated(WindowEvent e) {
+			// unused
+		}
+
+		@Override
+		public void windowDeactivated(WindowEvent e) {
+			// unused
+		}
+	};
 }

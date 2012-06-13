@@ -3,7 +3,8 @@ package map.Components;
 import java.awt.Image;
 import java.awt.Point;
 
-import commands.Command;
+import chat.commands.Command;
+
 
 
 

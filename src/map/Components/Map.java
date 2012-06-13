@@ -17,6 +17,11 @@ import javax.swing.JComponent;
 public class Map extends JComponent {
 
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 7412170807092053319L;
+
+	/**
 	 * The Floors that compose the Map
 	 */
 	private List<Floor> floors;

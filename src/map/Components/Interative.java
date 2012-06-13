@@ -1,6 +1,6 @@
 package map.Components;
 
-import commands.Command;
+import chat.commands.Command;
 
 /**
  * @author Jake
