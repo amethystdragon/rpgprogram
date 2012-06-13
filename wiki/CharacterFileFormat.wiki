@@ -3,7 +3,7 @@ This file defines how the data is saved to a file for the character data and cha
 
 = Introduction =
 
-The character template files and character save files have the same internal layout with different extensions.  This document defines how the data is stored within the files.  This includes sections for the different sub types of the character creation.
+The character template files and character save files have the same internal layout with different extensions.  This document defines how the data is stored within the files.  This includes sections for the different sub types of the character creation. This file will probably be encoded in JSON to make it easy and quicker to use.
 
 
 = Details =
