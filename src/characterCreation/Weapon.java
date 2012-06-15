@@ -5,7 +5,7 @@ package characterCreation;
  * @version 1.0
  * @created 14-Jun-2012 8:10:46 PM
  */
-public class Weapon {
+public abstract class Weapon {
 
 	private String Name;
 	private String Notes;

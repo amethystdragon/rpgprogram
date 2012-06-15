@@ -5,7 +5,7 @@ package characterCreation;
  * @version 1.0
  * @created 14-Jun-2012 8:10:51 PM
  */
-public class Ability {
+public abstract class Ability {
 
 	private String Name;
 	private String Notes;

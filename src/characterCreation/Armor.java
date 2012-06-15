@@ -5,7 +5,7 @@ package characterCreation;
  * @version 1.0
  * @created 14-Jun-2012 8:10:47 PM
  */
-public class Armor {
+public abstract class Armor {
 
 	private String Name;
 	private String Notes;
