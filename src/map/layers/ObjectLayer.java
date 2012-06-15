@@ -4,21 +4,21 @@ import java.awt.Point;
 
 import map.blocks.Block;
 
-public class CharacterLayer extends Layer {
-	
-	private static CharacterLayer instance;
 
-	private CharacterLayer(){
+public class ObjectLayer extends Layer {
+
+	private static ObjectLayer instance;
+	
+	private ObjectLayer(){
 		
 	}
 	
-	public synchronized CharacterLayer getInstance(){
+	public synchronized ObjectLayer getInstance(){
 		if(instance==null){
-			instance = new CharacterLayer();
+			instance = new ObjectLayer();
 		}
 		return instance;
 	}
-	
 
 	@Override
 	public boolean addBlock(Block block) {
@@ -37,4 +37,5 @@ public class CharacterLayer extends Layer {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
 }

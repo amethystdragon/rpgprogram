@@ -6,7 +6,7 @@ public class LayerManager {
 	
 	private static EnvironmentLayer ENVIRONMENT;
 	
-	private ObjectLayer view;
+	private ObjectLayer Objects;
 	
 	private CharacterLayer character;
 

@@ -1,9 +1,13 @@
 package map.blocks;
 
-public class EnvironmentBlock extends BasicBlock {
+public class EnvironmentBlock extends Block {
 
-	public EnvironmentBlock() {
-		// TODO Auto-generated constructor stub
+	private static int VIEWMODIFYER;
+	
+	
+	
+	private EnvironmentBlock() {
+		super(0,0);
 	}
 
 }
