@@ -28,7 +28,7 @@ public class Displaytest extends JPanel {
 
 	private int grid_size;
 
-	private JFrame container;
+//	private JFrame container;
 
 	private DragHandler handle;
 
@@ -40,7 +40,7 @@ public class Displaytest extends JPanel {
 
 		JFrame test = new JFrame();
 
-		test.add(new Displaytest(test));
+		test.add(new Displaytest());
 
 		test.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -52,7 +52,7 @@ public class Displaytest extends JPanel {
 
 	}
 
-	public Displaytest(JFrame container) {
+	public Displaytest() {
 
 		nearestPoint = null;
 
@@ -64,7 +64,7 @@ public class Displaytest extends JPanel {
 
 		grid_size = 10;
 
-		this.container = container;
+//		this.container = container;
 
 		handle = new DragHandler();
 
@@ -74,7 +74,7 @@ public class Displaytest extends JPanel {
 
 		this.addMouseWheelListener(handle);
 
-		this.setSize(this.container.getWidth(), this.container.getHeight());
+//		this.setSize(this.container.getWidth(), this.container.getHeight());
 
 	}
 
@@ -82,7 +82,7 @@ public class Displaytest extends JPanel {
 
 		super.paintComponent(g);
 
-		this.setSize(this.container.getWidth(), this.container.getHeight());
+//		this.setSize(this.container.getWidth(), this.container.getHeight());
 
 		g.setColor(Color.BLACK);
 

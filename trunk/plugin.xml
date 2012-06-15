@@ -22,9 +22,22 @@
    <extension
          point="org.eclipse.ui.views">
       <view
-            name="View"
+            class="rpgprogram.ChatView"
+            id="RPGProgram.ChatView"
+            name="ChatView"
+            restorable="true">
+      </view>
+      <view
             class="rpgprogram.View"
-            id="RpgProgram.view">
+            id="RPGProgram.view"
+            name="View"
+            restorable="true">
+      </view>
+      <view
+            class="rpgprogram.MapView"
+            id="RPGProgram.MapView"
+            name="MapView"
+            restorable="true">
       </view>
    </extension>
    <extension
@@ -32,11 +45,22 @@
       <perspectiveExtension
             targetID="*">
          <view
-               standalone="true"
-               minimized="false"
+               id="RPGProgram.ChatView"
+               relationship="stack"
                relative="org.eclipse.ui.editorss"
-               relationship="left"
-               id="RpgProgram.view">
+               showTitle="true">
+         </view>
+         <view
+               id="RPGProgram.view"
+               relationship="stack"
+               relative="org.eclipse.ui.editorss"
+               showTitle="true">
+         </view>
+         <view
+               id="RPGProgram.MapView"
+               minimized="false"
+               relationship="stack"
+               relative="org.eclipse.ui.editorss">
          </view>
       </perspectiveExtension>
    </extension>
