@@ -5,7 +5,7 @@ package characterCreation;
  * @version 1.0
  * @created 14-Jun-2012 8:10:50 PM
  */
-public class Attribute {
+public abstract class Attribute {
 
 	private String Name;
 	private String Notes;

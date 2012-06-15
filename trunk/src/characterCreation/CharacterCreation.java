@@ -22,4 +22,12 @@ public class CharacterCreation {
 		CharacterObject co = Character.CreateCharacter(file);
 		return co;
 	}
+	
+	public static boolean SaveCharacter(CharacterObject character){
+		return ImportExport.ExportCharacter((Character)character, "Character");
+	}
+	
+	public static boolean SaveTemplate(CharacterObject character){
+		return ImportExport.ExportCharacter((Character)character, "Template");
+	}
 }//end CharacterCreation

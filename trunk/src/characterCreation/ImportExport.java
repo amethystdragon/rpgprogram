@@ -13,8 +13,14 @@ public class ImportExport {
 	 * 
 	 * @param CharacterObject
 	 */
-	public static void ExportCharacter(Character CharacterObject){
-		
+	public static boolean ExportCharacter(Character CharacterObject, String object){
+		boolean success = false;
+		if(object.equals("Template")){
+			success = TemplateImportExport.exportTemplate(CharacterObject);
+		}else if(object.equals("Character")){
+			success = CharacterImportExport.exportCharacter(CharacterObject);
+		}
+		return success;
 	}
 
 	/**
