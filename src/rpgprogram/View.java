@@ -12,6 +12,8 @@ import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
+import GUI.ChatPanel;
+
 public class View extends ViewPart {
 	public static final String ID = "RpgProgram.view";
 
@@ -32,6 +34,7 @@ public class View extends ViewPart {
 		}
 
 		public Object[] getElements(Object parent) {
+			
 			if (parent instanceof Object[]) {
 				return (Object[]) parent;
 			}
@@ -65,7 +68,7 @@ public class View extends ViewPart {
 		viewer.setContentProvider(new ViewContentProvider());
 		viewer.setLabelProvider(new ViewLabelProvider());
 		// Provide the input to the ContentProvider
-		viewer.setInput(new String[] {"One", "Two", "Three"});
+		viewer.setInput(new String[] {"Two", "Two", "Three"});
 	}
 
 	/**
