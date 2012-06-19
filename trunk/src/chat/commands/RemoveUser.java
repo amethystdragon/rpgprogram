@@ -24,7 +24,7 @@ package chat.commands;
 
 import java.io.Serializable;
 
-import old.ConnectionInterface;
+import chat.ConnectionInterface;
 
 
 /* -------------------- JavaDoc Information ----------------------*/
@@ -44,7 +44,7 @@ public class RemoveUser implements Command, Serializable {
 		username = un;
 	}
 
-	public void execute(ConnectionInterface sc) {
-		sc.removeUser(username);
+	public void execute() {
+//		sc.removeUser(username);
 	}
 }

@@ -24,7 +24,9 @@ package chat.commands;
 
 import java.io.Serializable;
 
-import old.ConnectionInterface;
+import chat.Message;
+import chat.Observers;
+import chat.Server.ChatServer;
 
 
 /* -------------------- JavaDoc Information ----------------------*/
@@ -39,12 +41,22 @@ public class Kick implements Command, Serializable {
 	 */
 	private static final long serialVersionUID = 9041037972010006897L;
 	private String username;
+	private ChatServer server;
 
-	public Kick(String un) {
-		username = un;
+	public Kick(ChatServer chat, String name) {
+		server = chat;
+		username = name;
 	}
 
-	public void execute(ConnectionInterface sc) {
-		sc.kick(username);
+	public void execute() {
+		Observers obs = new Observers() {
+			@Override
+			public void sendMessage(Message msg) {}
+			@Override
+			public void receiveMessage(Message msg) {}
+		};
+		obs.username = this.username;
+		
+		server.removeColleague(obs);
 	}
 }

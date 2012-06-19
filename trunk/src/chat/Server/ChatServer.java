@@ -12,36 +12,37 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
-import chat.Colleague;
 import chat.Mediator;
 import chat.Message;
-
+import chat.Observers;
+import chat.commands.DiceRoll;
 
 /**
  * Represents the chat server mediator.
+ * 
  * @author Nick Iannone
  * @version 1.1 5/5/11
  */
 public class ChatServer implements Mediator {
-	
+
 	/**
 	 * The list of colleagues attached to the mediator.
 	 */
-	private volatile List<Colleague> colleagues;
+	private volatile List<Observers> observers;
 
 	/**
 	 * The version string.
-	 * @since 1.1
 	 */
 	private static final String VERSION = "1.1";
-	
+
 	/**
-	 * The default name index. Used in generating default names.
+	 * Used to generate default names
 	 */
 	public static int defaultNameIndex = 0;
-	
+
 	/**
 	 * Gets the next available default name.
+	 * 
 	 * @return The next default name.
 	 */
 	public static String getDefaultName() {
@@ -49,7 +50,7 @@ public class ChatServer implements Mediator {
 		defaultNameIndex++;
 		return name;
 	}
-	
+
 	/**
 	 * The server port.
 	 */
@@ -58,25 +59,28 @@ public class ChatServer implements Mediator {
 	/**
 	 * The non-proxy client name.
 	 */
-	private static final String LOCAL_NAME = "GHOST";
-	
+	private static final String LOCAL_NAME = "SERVER";
+
 	/**
 	 * The server-side socket.
 	 */
 	private ServerSocket serverSocket;
-	
+
 	/**
 	 * The outgoing message queue.
 	 */
 	private volatile Queue<Message> outgoingQueue;
-	
+
 	/**
-	 * Constructor. Starts the chat server, and starts a listener thread for connections.
-	 * @throws IOException if the socket cannot be opened.
+	 * Constructor. Starts the chat server, and starts a listener thread for
+	 * connections.
+	 * 
+	 * @throws IOException
+	 *             if the socket cannot be opened.
 	 */
 	public ChatServer() throws IOException {
 		// Set up the colleague tracking.
-		colleagues = new LinkedList<Colleague>();
+		observers = new LinkedList<Observers>();
 		// Notify of initialization.
 		echoVersion();
 		// Create the outgoing message queue.
@@ -92,22 +96,24 @@ public class ChatServer implements Mediator {
 		// Start the removal thread.
 		startRemovalThread();
 	}
-	
+
 	/**
 	 * Echoes the IP/port configuration.
 	 */
 	private void echoPortConfig() {
 		InetAddress addr = serverSocket.getInetAddress();
-		System.out.println("Listening on address " + addr.getHostAddress() + ", port " + PORT + "...");
+		System.out.println("Listening on address " + addr.getHostAddress()
+				+ ", port " + PORT + "...");
 	}
 
 	/**
 	 * Echoes the version number.
+	 * 
 	 * @since 1.1
 	 */
 	private void echoVersion() {
 		System.out.println("=============================================");
-		System.out.println("Welcome to Mediator Chat v" + VERSION);
+		System.out.println("Welcome to RPG Chat v" + VERSION);
 		System.out.println("=============================================");
 	}
 
@@ -122,11 +128,15 @@ public class ChatServer implements Mediator {
 				while (true) {
 					try {
 						Socket s = serverSocket.accept();
-						Colleague c = new ColleagueProxy(ChatServer.this, s);
-						System.out.println("Client connected from " + s.getInetAddress().getHostAddress() + ":" + s.getPort() + ", on local port " + s.getLocalPort() + ".");
+						Observers c = new ColleagueProxy(ChatServer.this, s);
+						System.out.println("Client connected from "
+								+ s.getInetAddress().getHostAddress() + ":"
+								+ s.getPort() + ", on local port "
+								+ s.getLocalPort() + ".");
 						addColleague(c);
 					} catch (IOException ex) {
-						// If we can't connect to the remote client, just forget it and move on.
+						// If we can't connect to the remote client, just forget
+						// it and move on.
 						ex.printStackTrace();
 					}
 				}
@@ -134,7 +144,7 @@ public class ChatServer implements Mediator {
 		});
 		listen.start();
 	}
-	
+
 	/**
 	 * Starts the client removal thread.
 	 */
@@ -147,19 +157,22 @@ public class ChatServer implements Mediator {
 					try {
 						// Wait for a while to minimize blocking.
 						Thread.sleep(100);
-					} catch (InterruptedException e) {}
+					} catch (InterruptedException e) {
+					}
 					// Make a list to store the removed colleagues.
-					List<Colleague> removedColleagues = new LinkedList<Colleague>();
-					synchronized (colleagues) {
-						// Go thru the colleagues list, looking for closed connections.
-						Iterator<Colleague> it = colleagues.iterator();
+					List<Observers> removedColleagues = new LinkedList<Observers>();
+					synchronized (observers) {
+						// Go thru the colleagues list, looking for closed
+						// connections.
+						Iterator<Observers> it = observers.iterator();
 						while (it.hasNext()) {
 							// Get the next colleague.
-							Colleague c = it.next();
+							Observers c = it.next();
 							if (c instanceof ColleagueProxy) {
 								// Convert to a server colleague.
-								ColleagueProxy col = (ColleagueProxy)c;
-								// If we find a closed connection, remove the colleague and quickly restart the search.
+								ColleagueProxy col = (ColleagueProxy) c;
+								// If we find a closed connection, remove the
+								// colleague and quickly restart the search.
 								if (col.isClosed()) {
 									it.remove();
 									removedColleagues.add(col);
@@ -172,10 +185,12 @@ public class ChatServer implements Mediator {
 						if (size == 1) {
 							System.out.println("Found 1 colleague to remove.");
 						} else {
-							System.out.println("Found " + size + " colleagues to remove.");
+							System.out.println("Found " + size
+									+ " colleagues to remove.");
 						}
-						// Go thru and notify everyone of the removed colleague(s).
-						for (Colleague col : removedColleagues) {
+						// Go thru and notify everyone of the removed
+						// colleague(s).
+						for (Observers col : removedColleagues) {
 							removeColleague(col);
 						}
 					}
@@ -184,10 +199,10 @@ public class ChatServer implements Mediator {
 		});
 		removal.start();
 	}
-	
+
 	/**
-	 * Starts the message dispatch thread.
-	 * This thread runs through and dispatches outgoing messages to all clients.
+	 * Starts the message dispatch thread. This thread runs through and
+	 * dispatches outgoing messages to all clients.
 	 */
 	private void startDispatchThread() {
 		Thread dispatch = new Thread(new Runnable() {
@@ -197,94 +212,103 @@ public class ChatServer implements Mediator {
 				while (true) {
 					try {
 						Thread.sleep(10);
-					} catch (InterruptedException ex) {}
-					synchronized (outgoingQueue) {
-						while (!outgoingQueue.isEmpty()) {
-							Message msg = outgoingQueue.poll();
+					} catch (InterruptedException ex) {
+					}
+					while (!outgoingQueue.isEmpty()) {
+						Message msg = outgoingQueue.poll();
+						if (msg != null)
 							dispatchMessage(msg);
-						}
 					}
 				}
 			}
 		});
 		dispatch.start();
 	}
-	
+
 	/**
 	 * Adds a colleague to the list.
-	 * @param col The colleague that has joined the server.
+	 * 
+	 * @param col
+	 *            The colleague that has joined the server.
 	 */
 	@Override
-	public boolean addColleague(Colleague col) {
+	public boolean addColleague(Observers col) {
 		boolean added = false;
 		if (col != null) {
-			synchronized (colleagues) {
-				if (!colleagues.contains(col)) {
-					added = colleagues.add(col);
+			synchronized (observers) {
+				if (!observers.contains(col)) {
+					added = observers.add(col);
 				}
 			}
 			if (added) {
 				String name = LOCAL_NAME;
 				if (col instanceof ColleagueProxy) {
-					ColleagueProxy cp = (ColleagueProxy)col;
+					ColleagueProxy cp = (ColleagueProxy) col;
 					name = cp.getName();
 				}
-				Message msg = new Message("INFO", "User " + name + " has joined the server.");
+				Message msg = new Message("INFO", "User " + name
+						+ " has joined the server.");
 				enqueueMessage(msg);
 			}
 		}
 		return added;
 	}
-	
+
 	/**
 	 * Removes a colleague from the list of mediators.
-	 * @param col The colleague that has left the server.
+	 * 
+	 * @param col
+	 *            The colleague that has left the server.
 	 */
 	@Override
-	public boolean removeColleague(Colleague col) {
+	public boolean removeColleague(Observers col) {
+		
 		boolean removed = false;
 		if (col != null) {
-			synchronized (colleagues) {
-				removed = colleagues.remove(col);
+			synchronized (observers) {
+				removed = observers.remove(col);
 			}
 			if (removed) {
 				String name = LOCAL_NAME;
 				if (col instanceof ColleagueProxy) {
-					ColleagueProxy cp = (ColleagueProxy)col;
+					ColleagueProxy cp = (ColleagueProxy) col;
 					name = cp.getName();
 				}
-				Message msg = new Message("INFO", "User " + name + " has left the server.");
+				Message msg = new Message("INFO", "User " + name
+						+ " has left the server.");
 				enqueueMessage(msg);
 			}
 		}
 		return removed;
 	}
-	
+
 	/**
-	 * Checks for / switches, and handles those if applicable. Otherwise, sends the message to all clients.
-	 * @see chat.Mediator#sendMessage(chat.Colleague, java.lang.String)
+	 * Checks for / switches, and handles those if applicable. Otherwise, sends
+	 * the message to all clients.
+	 * 
+	 * @see chat.Mediator#sendMessage(chat.Observers, java.lang.String)
 	 */
-	@Override
-	public void sendMessage(Colleague sender, String msg) {
-		if (msg.startsWith("/")) {
+	public void sendMessage(Message msg) {
+		if (msg.getMessage().startsWith("/")) {
 			// Check for / switches.
-			handleSwitch(sender, msg);
+			handleSwitch(msg);
 		} else {
 			// Generate the name, and send the message raw to all clients.
-			String name = LOCAL_NAME;
-			// If we can get a name from the client, use that.
-			if (sender instanceof ColleagueProxy) {
-				name = ((ColleagueProxy)sender).getName();
-			}
+			String name = null;
+			// TODO send it back and let the user know they are unknown
+			if (name == null)
+				name = "UNKNOWN";
+
 			// Generate and send the message.
-			Message rawmsg = new Message(name, msg);
-			enqueueMessage(rawmsg);
+			enqueueMessage(msg);
 		}
 	}
-	
+
 	/**
 	 * Enqueues outgoing messages for future dispatching.
-	 * @param msg The message to be dispatched.
+	 * 
+	 * @param msg
+	 *            The message to be dispatched.
 	 */
 	private void enqueueMessage(Message msg) {
 		synchronized (outgoingQueue) {
@@ -294,54 +318,86 @@ public class ChatServer implements Mediator {
 
 	/**
 	 * Handle a switch in the client's message.
-	 * @param sender The colleague object who sent the message.
-	 * @param msg The message that was sent.
-	 */
-	private void handleSwitch(Colleague sender, String msg) {
-		// Just yell at the user for now.
-		Message m = null;
-		if(msg.substring(1,3).equals("me")){
-			m = new Message(((ColleagueProxy)sender).getName(),msg.substring(3, msg.length()));
-			m.toggleMe(true);
-		}else{
-			m = new Message("INFO", "Invalid command: [[" + msg + "]].");
-		}
-		enqueueMessage(m);
-	}
-	
-	/**
-	 * Dispatches the message to the selected client.
-	 * Used By whisper
 	 * 
-	 * @param target The target colleague.
-	 * @param msg The message to send.
+	 * @param sender
+	 *            The colleague object who sent the message.
+	 * @param msg
+	 *            The message that was sent.
 	 */
-	@SuppressWarnings("unused")
-	private void dispatchSingleMessage(Colleague target, Message msg) {
-		target.receiveMessage(msg);
+	private void handleSwitch(Message msg) {
+		// Just yell at the user for now.
+		if (msg.getMessage().contains("me")) {
+			msg.toggleMe(true);
+		} else if (msg.getMessage().contains("roll")) {
+			DiceRoll dr = new DiceRoll(this, msg);
+			dr.execute();
+			return;
+		} else {
+			msg = new Message("INFO", "Invalid command: [[" + msg + "]].");
+		}
+		enqueueMessage(msg);
+	}
+
+	/**
+	 * Dispatches the message to the selected client. Used By whisper
+	 * 
+	 * @param target
+	 *            The target colleague.
+	 * @param msg
+	 *            The message to send.
+	 */
+	public void tell(String username, Message msg) {
+		Observers obs = new Observers() {
+			@Override
+			public void sendMessage(Message msg) {
+			}
+			@Override
+			public void receiveMessage(Message msg) {
+			}
+		};
+		obs.username = username;
+		//TODO add checking
+		observers.get(observers.indexOf(obs)).receiveMessage(msg);
 	}
 
 	/**
 	 * Dispatches the message to all connected clients.
-	 * @param msg The message that was sent.
+	 * 
+	 * @param msg
+	 *            The message that was sent.
 	 */
 	private void dispatchMessage(Message msg) {
 		// Send it to all colleagues.
-		synchronized (colleagues) {
-			for (Colleague col : colleagues) {
+		synchronized (observers) {
+			for (Observers col : observers) {
 				col.receiveMessage(msg);
 			}
 		}
-		System.out.println(msg.sender + ": " + msg.message);
+		System.out.println(msg.toString());
 	}
 
 	/**
 	 * Handles a client name change.
-	 * @param oldName The last reported name of the client.
-	 * @param newName The new name of the client.
+	 * 
+	 * @param oldName
+	 *            The last reported name of the client.
+	 * @param newName
+	 *            The new name of the client.
 	 */
-	public void onNameChanged(String oldName, String newName) {
-		Message msg = new Message("INFO", "User " + oldName + " has changed their name to " + newName + ".");
+	public void changeName(String oldName, String newName) {
+		Message msg = new Message(LOCAL_NAME, "User "+oldName+" has changed their name to "+newName+".");
+		Observers obs = new Observers() {
+			@Override
+			public void sendMessage(Message msg) {
+			}
+			@Override
+			public void receiveMessage(Message msg) {
+			}
+		};
+		obs.username = oldName;
+		//TODO checking
+		observers.get(observers.indexOf(obs)).username = newName;
 		enqueueMessage(msg);
 	}
+
 }

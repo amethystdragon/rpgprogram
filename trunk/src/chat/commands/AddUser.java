@@ -24,8 +24,6 @@ package chat.commands;
 
 import java.io.Serializable;
 
-import old.ConnectionInterface;
-
 
 /* -------------------- JavaDoc Information ----------------------*/
 /**
@@ -44,7 +42,7 @@ public class AddUser implements Command, Serializable {
 		username = un;
 	}
 
-	public void execute(ConnectionInterface sc) {
-		sc.addUser(username);
+	public void execute() {
+//		sc.addUser(username);
 	}
 }

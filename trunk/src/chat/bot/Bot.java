@@ -1,6 +1,6 @@
 /**
  * File Name: Bot.java
- * Author:    Maximilian Thomas Witte
+ * Author:    ggzaery@gmail.com
  * Date:      May 6, 2011
  * Project:
  *
@@ -18,15 +18,15 @@ import java.util.Queue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import chat.Colleague;
 import chat.Message;
+import chat.Observers;
 
 /**
  *
  * @author Maximilian Thomas Witte
  * @version 1.00
  */
-public class Bot implements Colleague {
+public class Bot extends Observers {
 
     private Socket socket;
     private String name;         
@@ -88,7 +88,7 @@ public class Bot implements Colleague {
 	                        Logger.getLogger(Bot.class.getName()).log(Level.SEVERE, null, ex);
 	                    }
 	
-	                    sendMessage( responses.poll().message );
+	                    sendMessage( responses.poll());
 	                }
             	}
             }
@@ -99,8 +99,8 @@ public class Bot implements Colleague {
 
         if( msg != null )
         {
-            String sender = msg.sender;
-            String message = msg.message;
+            String sender = msg.getSender();
+            String message = msg.getMessage();
             // Check that the message is not my own
             // if not the proceed
             if( !sender.equals(name) )
@@ -112,9 +112,7 @@ public class Bot implements Colleague {
         }
     }
 
-    public void sendMessage(String msg) {
-
-        // jacob's code
+    public void sendMessage(Message msg) {
         try
         {
             // write to the socket
@@ -192,5 +190,4 @@ public class Bot implements Colleague {
 
         return response;
     }
-
 }

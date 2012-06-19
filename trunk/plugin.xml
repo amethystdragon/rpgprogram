@@ -22,19 +22,13 @@
    <extension
          point="org.eclipse.ui.views">
       <view
-            class="rpgprogram.ChatView"
+            class="gui.views.ChatView"
             id="RPGProgram.ChatView"
             name="ChatView"
             restorable="true">
       </view>
       <view
-            class="rpgprogram.View"
-            id="RPGProgram.view"
-            name="View"
-            restorable="true">
-      </view>
-      <view
-            class="rpgprogram.MapView"
+            class="gui.views.MapView"
             id="RPGProgram.MapView"
             name="MapView"
             restorable="true">
@@ -46,12 +40,6 @@
             targetID="*">
          <view
                id="RPGProgram.ChatView"
-               relationship="stack"
-               relative="org.eclipse.ui.editorss"
-               showTitle="true">
-         </view>
-         <view
-               id="RPGProgram.view"
                relationship="stack"
                relative="org.eclipse.ui.editorss"
                showTitle="true">
@@ -75,6 +63,12 @@
                   label="Exit">
             </command>
          </menu>
+         <command
+               commandId="RPGProgram.Connect"
+               helpContextId="Connect to a chat server"
+               id="connect"
+               label="Connect">
+         </command>
       </menuContribution>
    </extension>
    <extension

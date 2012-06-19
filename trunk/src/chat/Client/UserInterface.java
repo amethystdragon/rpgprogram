@@ -32,8 +32,7 @@ import chat.Message;
 /**
  * The user interface used for the chat program GUI.
  * 
- * @author Justin Kreier
- * @author Karl Schmidbauer
+ * @author ggzaery@gmail.com
  * @version 2.0
  * @date 12/24/11
  */
@@ -218,12 +217,7 @@ public class UserInterface extends JFrame {
 				if (input instanceof Message) {
 					// print the message to the text box
 					Message message = (Message) input;
-					if (message.getMeState()) {
-						messages.append(message.sender + message.message + "\n");
-					} else {
-						messages.append(message.sender + ": " + message.message
-								+ "\n");
-					}
+					messages.append(message.toString());
 
 					// scroll the message log to the bottom
 					messages.selectAll();

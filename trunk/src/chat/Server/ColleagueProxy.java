@@ -9,7 +9,7 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.SocketException;
 
-import chat.Colleague;
+import chat.Observers;
 import chat.Mediator;
 import chat.Message;
 
@@ -19,10 +19,9 @@ import chat.Message;
  * @author Nick Iannone
  * @version 1.1 5/5/11
  */
-public class ColleagueProxy implements Colleague {
+public class ColleagueProxy extends Observers {
 	
 	protected Mediator mediator;
-	protected String name;
 	
 	/**
 	 * The disconnection string.
@@ -57,7 +56,7 @@ public class ColleagueProxy implements Colleague {
 	 * @throws IOException If the socket is not connected, or an error occurs in opening the input or output streams.
 	 */
 	public ColleagueProxy(ChatServer server, Socket socket) throws IOException {
-		name = ChatServer.getDefaultName();
+		username = ChatServer.getDefaultName();
 		mediator = server;
 		isClosed = false;
 		this.socket = socket;
@@ -86,22 +85,22 @@ public class ColleagueProxy implements Colleague {
 						if (o instanceof Message) {
 							Message msg = (Message)o;
 							// Handle disconnect requests.
-							if (DISCON_STRING.equals(msg.sender)) {
+							if (DISCON_STRING.equals(msg.getSender())) {
 								isClosed = true;
 								break;
 							}
 							// Handle name changes.
-							if (name != null && !name.equals(msg.sender)) {
+							if (username != null && !username.equals(msg.getSender())) {
 								// Send a name change notification.
 								if (mediator instanceof ChatServer) {
 									ChatServer server = (ChatServer)mediator;
-									server.onNameChanged(name, msg.sender);
+									server.changeName(username, msg.getSender());
 								}
 								// Update the name.
-								name = msg.sender;
+								username = msg.getSender();
 							}
 							// Forward the client's message to the server.
-							sendMessage(msg.message);
+							sendMessage(msg);
 						}
 					} catch (SocketException e) {
 						isClosed = true;
@@ -121,7 +120,7 @@ public class ColleagueProxy implements Colleague {
 	}
 	
 	/**
-	 * @see chat.Colleague#receiveMessage(chat.Message)
+	 * @see chat.Observers#receiveMessage(chat.Message)
 	 */
 	@Override
 	public void receiveMessage(Message msg) {
@@ -139,11 +138,11 @@ public class ColleagueProxy implements Colleague {
 	}
 	
 	/**
-	 * @see chat.Colleague#sendMessage(String)
+	 * @see chat.Observers#sendMessage(String)
 	 */
 	@Override
-	public void sendMessage(String msg) {
-		mediator.sendMessage(this, msg);
+	public void sendMessage(Message msg) {
+		mediator.sendMessage(msg);
 	}
 
 	/**
@@ -159,7 +158,6 @@ public class ColleagueProxy implements Colleague {
 	 * @return The colleague's name.
 	 */
 	public String getName() {
-		return name;
+		return username;
 	}
-
 }

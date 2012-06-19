@@ -1,6 +1,6 @@
 /**
  * File Name: BotClient.java
- * Author:    Maximilian Thomas Witte
+ * Author:    ggzaery@gmail.com
  * Date:      May 16, 2011
  * Project:
  *

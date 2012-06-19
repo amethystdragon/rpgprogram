@@ -24,7 +24,7 @@ package chat.commands;
 
 import java.io.Serializable;
 
-import old.ConnectionInterface;
+import chat.Server.ChatServer;
 
 
 /* -------------------- JavaDoc Information ----------------------*/
@@ -40,13 +40,15 @@ public class Rename implements Command, Serializable {
 	private static final long serialVersionUID = 5526960391943566260L;
 	private String oldName;
 	private String newName;
+	private ChatServer server;
 
-	public Rename(String on, String nn) {
-		oldName = on;
-		newName = nn;
+	public Rename(ChatServer chat, String oldName, String newName) {
+		this.oldName = oldName;
+		this.newName = newName;
+		this.server = chat;
 	}
 
-	public void execute(ConnectionInterface sc) {
-		sc.rename(oldName, newName);
+	public void execute() {
+		server.changeName(oldName, newName);
 	}
 }

@@ -8,19 +8,19 @@ import java.io.Serializable;
 /**
  * Represents a Message object which can be transmitted between 
  * clients and the server.
- * @author Nick Iannone
+ * @author ggzaery@gmail.com
  * @version 1.0 5/3/11
  */
 public class Message implements Serializable {
 	/**
 	 * The name of the sender.
 	 */
-	public String sender;
+	private String sender;
 	
 	/**
 	 * The contents of the message.
 	 */
-	public String message;
+	private String message;
 	
 	/**
 	 * 
@@ -41,12 +41,24 @@ public class Message implements Serializable {
 		this.message = message;
 	}
 	
-
 	public void toggleMe(boolean b) {
 		me = b;
 	}
 
 	public boolean getMeState() {
 		return me;
+	}
+	
+	public String toString(){
+		if(me) return "* "+sender+" "+message;
+		return sender+": "+message;
+	}
+
+	public String getSender() {
+		return sender;
+	}
+
+	public String getMessage() {
+		return message;
 	}
 }
