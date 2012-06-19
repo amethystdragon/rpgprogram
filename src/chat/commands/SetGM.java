@@ -24,7 +24,7 @@ package chat.commands;
 
 import java.io.Serializable;
 
-import old.ConnectionInterface;
+import chat.ConnectionInterface;
 
 
 /* -------------------- JavaDoc Information ----------------------*/
@@ -44,7 +44,7 @@ public class SetGM implements Command, Serializable {
 		text = txt;
 	}
 
-	public void execute(ConnectionInterface sc) {
-		sc.setGM(text);
+	public void execute() {
+//		sc.setGM(text);
 	}
 }

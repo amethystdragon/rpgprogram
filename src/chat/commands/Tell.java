@@ -1,4 +1,4 @@
-/*- SocketConnection.java -----------------------------------------+
+/*- SD_Whisper.java -----------------------------------------------+
  |                                                                 |
  |  Copyright (C) 2002-2003 Joseph Monti, LlamaChat                |
  |                     countjoe@users.sourceforge.net              |
@@ -19,29 +19,44 @@
  |                                                                 |
  +-----------------------------------------------------------------+
  */
-package old;
+
+package chat.commands;
+
+import java.io.Serializable;
+import java.util.Scanner;
+
+import chat.Message;
+import chat.Server.ChatServer;
 
 
 /* -------------------- JavaDoc Information ----------------------*/
 /**
- * The inteface to connection classes.
+ * Replace information on this file with your file's information.
  * @author Joseph Monti <a href="mailto:countjoe@users.sourceforge.net">countjoe@users.sourceforge.net</a>
  * @version 0.8
- * @see chat.commands.Command
  */
-public interface ConnectionInterface {
-	public void addUser(String username);
-	public void setGM(String text);
-	public void removeUser(String username);
-	public void rename(String on, String nn);
-	public void kick(String username);
-	public void channel(boolean new_channel, String name, String pass);
-	public void chat(String username, String message);
-	public void private_msg(String username, String message);
-	public void whisper(String username, String message);
-	public void chatLog(boolean start);
-	public void error(String s);
-	public void _writeObject(Object obj);
-	public void serverCap(char type, Object obj);
-	public void close();
+public class Tell implements Command, Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 706760033052528601L;
+	private String sender;
+	private String message;
+	private String listener;
+	private ChatServer server;
+
+	public Tell(ChatServer chat, Message msg) {
+		this.server = chat;
+		
+		sender = msg.getSender();
+		
+		Scanner scan = new Scanner(msg.getMessage().substring(6));
+		listener = scan.next();
+		message = msg.getMessage().substring(6+listener.length());
+		
+	}
+
+	public void execute() {
+		this.server.tell(this.listener, new Message(this.sender, this.message));
+	}
 }

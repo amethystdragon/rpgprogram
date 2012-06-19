@@ -1,7 +1,5 @@
 package chat.commands;
 
-import old.ConnectionInterface;
-
 
 public interface Command {
 	/**
@@ -9,5 +7,5 @@ public interface Command {
 	 * the receiving end of the socket
 	 * @param sc The reference to the receiving connection
 	 */
-	public void execute(ConnectionInterface sc);
+	public void execute();
 }

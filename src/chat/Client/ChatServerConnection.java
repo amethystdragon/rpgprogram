@@ -9,15 +9,14 @@ import javax.net.ssl.SSLSocketFactory;
 
 import chat.ConnectionInterface;
 import chat.MessageQueue;
-
-import commands.AddUser;
-import commands.RemoveUser;
+import chat.commands.AddUser;
+import chat.commands.RemoveUser;
 
 /**
  * Implements the generic connection interface for basic functionality
  * Implements Runnable so it can operate on its own thread natively
  * 
- * @author amethyr
+ * @author ggzaery@gmail.com
  *
  */
 public class ChatServerConnection implements ConnectionInterface, Runnable{

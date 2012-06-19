@@ -1,4 +1,4 @@
-package rpgprogram;
+package gui.views;
 
 import mapGenerator.copy.Displaytest;
 

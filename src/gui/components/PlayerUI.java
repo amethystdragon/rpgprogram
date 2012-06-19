@@ -1,4 +1,4 @@
-package GUI;
+package gui.components;
 
 import java.awt.BorderLayout;
 import java.awt.event.WindowEvent;
@@ -34,7 +34,6 @@ public class PlayerUI extends JPanel{
 		container.setSize(600, 800);
 		setLayout(new BorderLayout());
 
-		//TODO
 		chatter = new ChatPanel();
 		//Test code
 		add(chatter, BorderLayout.CENTER);

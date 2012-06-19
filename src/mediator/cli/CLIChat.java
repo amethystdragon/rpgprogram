@@ -111,12 +111,12 @@ public class CLIChat {
 	 */
 	public void draw() {
 		for(Message m: messageBuffer){
-			if(m.sender.equals("")){
+			if(m.getSender().equals("")){
 				System.out.println("");
-			}else if (m.sender.equals(name)){
-				System.out.println(String.format("[%s] %s", m.sender, m.message));
+			}else if (m.getSender().equals(name)){
+				System.out.println(String.format("[%s] %s", m.getSender(), m.getMessage()));
 			}else{
-				System.out.println(String.format("<%s> %s", m.sender, m.message));
+				System.out.println(String.format("<%s> %s", m.getSender(), m.getMessage()));
 			}
 		}
 		System.out.flush();

@@ -1,24 +1,20 @@
-package rpgprogram;
+package gui.views;
+
+import gui.components.ChatPanel;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.awt.SWT_AWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.ViewPart;
 
-import GUI.ChatPanel;
 
 public class ChatView extends ViewPart {
 
-	public ChatView() {
-		// TODO Auto-generated constructor stub
-	}
-
 	@Override
 	public void createPartControl(Composite parent) {
-		Composite compos = new Composite(parent, SWT.EMBEDDED);
-		java.awt.Frame frame = SWT_AWT.new_Frame(compos);
+		Composite chatComposite = new Composite(parent, SWT.EMBEDDED);
+		java.awt.Frame frame = SWT_AWT.new_Frame(chatComposite);
 		frame.add(new ChatPanel());
-
 	}
 
 	@Override
